@@ -24,6 +24,8 @@ export interface PlayerProfile {
     lastPlayedAt?: string;
   };
   recent: GameResult[];
+  /** Mistake book (错题本): word id -> how often it was wrong. */
+  mistakes: Record<string, { count: number; lastAt: string }>;
 }
 
 export const defaultProfile: PlayerProfile = {
@@ -35,6 +37,7 @@ export const defaultProfile: PlayerProfile = {
   quests: {},
   stats: { gamesPlayed: 0, bestScores: {} },
   recent: [],
+  mistakes: {},
 };
 
 export const profileStore = createPersistentStore<PlayerProfile>('wz.profile', defaultProfile);
@@ -46,18 +49,26 @@ export function wireProfile(): void {
   if (wired) return;
   wired = true;
   on('game_completed', (r) => {
-    profileStore.set((p) => ({
-      ...p,
-      stats: {
-        gamesPlayed: p.stats.gamesPlayed + 1,
-        bestScores: {
-          ...p.stats.bestScores,
-          [r.gameSlug]: Math.max(p.stats.bestScores[r.gameSlug] ?? 0, r.score),
+    profileStore.set((p) => {
+      const mistakes = { ...p.mistakes };
+      for (const id of r.mistakeIds ?? []) {
+        mistakes[id] = { count: (mistakes[id]?.count ?? 0) + 1, lastAt: r.completedAt };
+      }
+      for (const id of r.masteredIds ?? []) delete mistakes[id];
+      return {
+        ...p,
+        mistakes,
+        stats: {
+          gamesPlayed: p.stats.gamesPlayed + 1,
+          bestScores: {
+            ...p.stats.bestScores,
+            [r.gameSlug]: Math.max(p.stats.bestScores[r.gameSlug] ?? 0, r.score),
+          },
+          lastPlayedAt: r.completedAt,
         },
-        lastPlayedAt: r.completedAt,
-      },
-      recent: [r, ...p.recent].slice(0, 20),
-    }));
+        recent: [r, ...p.recent].slice(0, 20),
+      };
+    });
     // Future: award XP + coins here (src/lib/rewards.ts), check quests.
   });
 }

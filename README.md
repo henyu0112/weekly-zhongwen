@@ -1,6 +1,7 @@
 # 每周中文 WeeklyZhongwen
 
-A web platform where a new Chinese-learning mini-game is released every week (Standard 1–6 topics).
+A web platform where a new Chinese-learning mini-game is released every week (Standard 1 – Form 5).
+Levels are numbered 1–11 internally: 1–6 = Standard 1–6, 7–11 = Form 1–5 (see `src/lib/levels.ts`).
 Static site built with Next.js (static export), TypeScript and Tailwind CSS, hosted on GitHub Pages.
 
 ## Run locally
@@ -25,7 +26,8 @@ src/components   header, search, language switch, cards, settings UI, game playe
 src/lib          settings, profile store, events, search, i18n, game result types
 src/messages     en.ts / zh.ts: all UI text
 src/games        catalog.ts (game metadata), loaders.ts, one folder per game
-src/data         shared vocabulary pool (mixed Standards 1–6)
+src/data         vocab.ts (Word Pop) and words.ts (tagged words for Hanzi Slash: level, word type, topic, antonyms)
+                 NOTE: words.ts is a DRAFT; levels/word types must be reviewed against the real syllabus.
 ```
 
 ## Add a weekly game

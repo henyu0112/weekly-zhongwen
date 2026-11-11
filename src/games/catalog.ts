@@ -1,9 +1,18 @@
 import type { Localized } from '@/lib/types';
 
-export type TopicId = 'vocabulary' | 'characters' | 'pinyin' | 'idioms' | 'sentences';
+export type TopicId =
+  | 'vocabulary'
+  | 'characters'
+  | 'pinyin'
+  | 'idioms'
+  | 'sentences'
+  | 'wordtypes'
+  | 'antonyms';
 
 export const TOPICS: Record<TopicId, { label: Localized; emoji: string }> = {
   vocabulary: { label: { en: 'Vocabulary', zh: '词汇' }, emoji: '📚' },
+  wordtypes: { label: { en: 'Word types', zh: '词性' }, emoji: '🏷️' },
+  antonyms: { label: { en: 'Antonyms', zh: '反义词' }, emoji: '↔️' },
   characters: { label: { en: 'Characters', zh: '汉字' }, emoji: '✍️' },
   pinyin: { label: { en: 'Pinyin', zh: '拼音' }, emoji: '🔤' },
   idioms: { label: { en: 'Idioms', zh: '成语' }, emoji: '🐉' },
@@ -22,7 +31,7 @@ export interface GameMeta {
   /** Tailwind gradient classes for the card artwork. */
   gradient: string;
   topics: TopicId[];
-  /** Inclusive Standard range covered by the questions. */
+  /** Inclusive level range: 1–6 = Standard 1–6, 7–11 = Form 1–5. */
   standards: [number, number];
   /** Monday the game goes live (YYYY-MM-DD). Future dates stay hidden. */
   releaseDate: string;
@@ -39,6 +48,27 @@ export interface GameMeta {
  */
 export const GAMES: GameMeta[] = [
   {
+    slug: 'hanzi-slash',
+    title: { en: 'Hanzi Slash', zh: '汉字斩' },
+    description: {
+      en: 'Slice only the fruits whose words follow the rule, like adjectives, food words or antonyms. Every round brings a new rule, and a wrong cut costs a life!',
+      zh: '只切开符合规则的水果，例如形容词、食物类词语或反义词。每回合都有新规则，切错会失去一条命！',
+    },
+    howTo: {
+      en: 'Read the rule at the top. Swipe (or tap) the fruits that match it. Choose your level range and difficulty first. Wrong words are saved in your mistake book (错题本).',
+      zh: '看清楚上方的规则，滑动（或点击）符合规则的水果。开始前可选择年级范围和难度。切错的词语会存进错题本。',
+    },
+    pinyin: 'han zi zhan qie shui guo',
+    emoji: '🍉',
+    gradient: 'from-rose-500 to-orange-400',
+    topics: ['vocabulary', 'wordtypes', 'antonyms'],
+    standards: [1, 11],
+    releaseDate: '2026-11-09',
+    tags: ['slash', 'fruit', 'swipe', 'rules', 'mistake book'],
+    inspiredBy: 'Fruit Ninja',
+    playable: true,
+  },
+  {
     slug: 'word-pop',
     title: { en: 'Word Pop', zh: '汉字泡泡' },
     description: {
@@ -54,31 +84,10 @@ export const GAMES: GameMeta[] = [
     gradient: 'from-sky-400 to-indigo-500',
     topics: ['vocabulary', 'characters'],
     standards: [1, 6],
-    releaseDate: '2026-11-09',
+    releaseDate: '2026-11-02',
     tags: ['quiz', 'timed', 'matching'],
     inspiredBy: 'Bubble Pop',
     playable: true,
-  },
-  {
-    slug: 'fruit-slash',
-    title: { en: 'Fruit Slash', zh: '切水果' },
-    description: {
-      en: 'Slice the fruits whose names match the Chinese word, and dodge the bombs!',
-      zh: '切开与中文词语相符的水果，小心避开炸弹！',
-    },
-    howTo: {
-      en: 'Swipe across the correct fruit. Avoid the wrong ones.',
-      zh: '滑动手指切开正确的水果，避开错误的水果。',
-    },
-    pinyin: 'qie shui guo',
-    emoji: '🍉',
-    gradient: 'from-rose-400 to-orange-400',
-    topics: ['vocabulary'],
-    standards: [1, 6],
-    releaseDate: '2026-11-02',
-    tags: ['swipe', 'fruit', 'reflex'],
-    inspiredBy: 'Fruit Ninja',
-    playable: false,
   },
   {
     slug: 'hanzi-snake',

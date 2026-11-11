@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { TOPICS, getGame } from '@/games/catalog';
 import { GamePlayer } from './GamePlayer';
 import { formatDate, loc, useT } from '@/lib/i18n';
-import { isReleased, standardsLabelKey, useNow } from '@/lib/games';
+import { isReleased, useNow } from '@/lib/games';
+import { levelRangeText } from '@/lib/levels';
 import { useProfile } from '@/lib/profile';
 
 export function GameView({ slug }: { slug: string }) {
@@ -16,7 +17,6 @@ export function GameView({ slug }: { slug: string }) {
 
   const released = isReleased(game, now);
   const best = profile.stats.bestScores[slug];
-  const [a, b] = game.standards;
 
   return (
     <div className="space-y-6">
@@ -65,7 +65,7 @@ export function GameView({ slug }: { slug: string }) {
           <p className="mt-2 text-muted">{loc(game.description, locale)}</p>
           <div className="mt-3 flex flex-wrap gap-1.5">
             <span className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold text-brand">
-              {t(standardsLabelKey(game), { a, b })}
+              {levelRangeText(game.standards, locale)}
             </span>
             {game.topics.map((tp) => (
               <span key={tp} className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold">

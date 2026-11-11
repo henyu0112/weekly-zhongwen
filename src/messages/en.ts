@@ -17,7 +17,7 @@ export const en = {
   'search.viewAll': 'See all results',
 
   'home.hero.title': 'Play. Learn. Repeat.',
-  'home.hero.sub': 'A new Chinese learning mini-game arrives every week, covering Standard 1 to 6 topics.',
+  'home.hero.sub': 'A new Chinese learning mini-game arrives every week, from Standard 1 up to Form 5.',
   'home.thisWeek': "This week's game",
   'home.playNow': 'Play now',
   'home.recent': 'Past games',
@@ -26,23 +26,19 @@ export const en = {
   'home.how.1.title': 'New game weekly',
   'home.how.1.desc': 'Every week we release a fresh mini-game inspired by classics you already love.',
   'home.how.2.title': 'Mixed challenges',
-  'home.how.2.desc': 'Questions from Standard 1 to 6 are mixed together, so every round feels different.',
+  'home.how.2.desc': 'Pick your level range and difficulty. Questions are mixed, so every round feels different.',
   'home.how.3.title': 'Works anywhere',
   'home.how.3.desc': 'Play on your phone, tablet or computer. Nothing to install!',
 
   'games.title': 'All games',
   'games.sub': 'Every weekly mini-game released so far.',
-  'games.filter.standard': 'Standard',
+  'games.filter.standard': 'Level',
   'games.filter.topic': 'Topic',
   'games.filter.all': 'All',
   'games.empty': 'No games match your filters.',
   'games.clear': 'Clear filters',
   'games.count': '{n} game(s)',
   'games.searchResultsFor': 'Results for "{q}"',
-
-  'standard.label': 'Standard {n}',
-  'standard.range': 'Standard {a}–{b}',
-  'standard.mixed': 'Mixed Standards 1–6',
 
   'game.week': 'Week of {date}',
   'game.playable': 'Playable',
@@ -89,9 +85,9 @@ export const en = {
 
   'about.title': 'About WeeklyZhongwen',
   'about.p1':
-    'WeeklyZhongwen (每周中文) helps primary school students practise Chinese through short, fun mini-games.',
+    'WeeklyZhongwen (每周中文) helps students practise Chinese through short, fun mini-games.',
   'about.p2':
-    'Each week a new game is published, inspired by classic mobile and arcade games. Questions follow the topics students meet from Standard 1 to Standard 6.',
+    'Each week a new game is published, inspired by classic mobile and arcade games. Content follows what students meet from Standard 1 in primary school up to Form 5 in secondary school.',
   'about.p3': 'The site works on phones, tablets and computers, in English and Chinese.',
 
   'notfound.title': 'Page not found',

@@ -19,7 +19,7 @@ export const zh: Record<MessageKey, string> = {
   'search.viewAll': '查看全部结果',
 
   'home.hero.title': '边玩，边学，天天进步！',
-  'home.hero.sub': '每周推出一款中文学习小游戏，内容涵盖小学一至六年级。',
+  'home.hero.sub': '每周推出一款中文学习小游戏，内容涵盖小学一年级至中五。',
   'home.thisWeek': '本周游戏',
   'home.playNow': '马上玩',
   'home.recent': '往期游戏',
@@ -28,7 +28,7 @@ export const zh: Record<MessageKey, string> = {
   'home.how.1.title': '每周新游戏',
   'home.how.1.desc': '每周都有一款新小游戏，灵感来自你喜爱的经典游戏。',
   'home.how.2.title': '混合挑战',
-  'home.how.2.desc': '一至六年级的题目混在一起，每一局都不一样。',
+  'home.how.2.desc': '自选年级范围和难度，题目混合出现，每一局都不一样。',
   'home.how.3.title': '随时随地',
   'home.how.3.desc': '手机、平板、电脑都能玩，无需安装！',
 
@@ -41,10 +41,6 @@ export const zh: Record<MessageKey, string> = {
   'games.clear': '清除筛选',
   'games.count': '共 {n} 款游戏',
   'games.searchResultsFor': '“{q}”的搜索结果',
-
-  'standard.label': '{n}年级',
-  'standard.range': '{a}–{b}年级',
-  'standard.mixed': '一至六年级混合',
 
   'game.week': '{date} 当周',
   'game.playable': '可游玩',
@@ -89,8 +85,8 @@ export const zh: Record<MessageKey, string> = {
   'soon.home': '返回首页',
 
   'about.title': '关于每周中文',
-  'about.p1': '每周中文（WeeklyZhongwen）通过简短有趣的小游戏，帮助小学生练习中文。',
-  'about.p2': '每周发布一款新游戏，灵感来自经典手机游戏和街机游戏，题目涵盖小学一年级至六年级的学习内容。',
+  'about.p1': '每周中文（WeeklyZhongwen）通过简短有趣的小游戏，帮助学生练习中文。',
+  'about.p2': '每周发布一款新游戏，灵感来自经典手机游戏和街机游戏，内容涵盖小学一年级至中学中五的学习内容。',
   'about.p3': '网站支持手机、平板和电脑，并提供中文和英文两种语言。',
 
   'notfound.title': '找不到页面',

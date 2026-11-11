@@ -6,6 +6,7 @@ import { GameCard } from './GameCard';
 import { TOPICS, type TopicId } from '@/games/catalog';
 import { loc, useT } from '@/lib/i18n';
 import { searchGames, useReleasedGames } from '@/lib/games';
+import { LEVELS, levelName, levelShort } from '@/lib/levels';
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -54,9 +55,9 @@ export function GamesView() {
           <Chip active={standard === null} onClick={() => setStandard(null)}>
             {t('games.filter.all')}
           </Chip>
-          {[1, 2, 3, 4, 5, 6].map((n) => (
+          {LEVELS.map((n) => (
             <Chip key={n} active={standard === n} onClick={() => setStandard(standard === n ? null : n)}>
-              {n}
+              <span title={levelName(n, locale)}>{levelShort(n, locale)}</span>
             </Chip>
           ))}
         </div>

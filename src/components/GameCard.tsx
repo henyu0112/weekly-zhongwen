@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { TOPICS, type GameMeta } from '@/games/catalog';
 import { formatDate, loc, useT } from '@/lib/i18n';
-import { standardsLabelKey } from '@/lib/games';
+import { levelRangeText } from '@/lib/levels';
 
 export function GameCard({ game, featured = false }: { game: GameMeta; featured?: boolean }) {
   const { t, locale } = useT();
-  const [a, b] = game.standards;
 
   return (
     <Link
@@ -49,7 +48,7 @@ export function GameCard({ game, featured = false }: { game: GameMeta; featured?
         </p>
         <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
           <span className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold text-brand">
-            {t(standardsLabelKey(game), { a, b })}
+            {levelRangeText(game.standards, locale)}
           </span>
           {game.topics.map((tp) => (
             <span key={tp} className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold">

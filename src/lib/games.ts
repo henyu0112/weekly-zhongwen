@@ -62,8 +62,3 @@ export function searchGames(games: GameMeta[], query: string, _locale: Locale): 
     .sort((a, b) => b.score - a.score)
     .map((s) => s.g);
 }
-
-export const standardsLabelKey = (g: GameMeta) => {
-  const [a, b] = g.standards;
-  return a === 1 && b === 6 ? ('standard.mixed' as const) : ('standard.range' as const);
-};

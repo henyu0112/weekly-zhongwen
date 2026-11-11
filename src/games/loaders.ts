@@ -6,5 +6,6 @@ import type { GameProps } from '@/lib/types';
  * the player opens that game's page.
  */
 export const GAME_LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
+  'hanzi-slash': () => import('./hanzi-slash/HanziSlash'),
   'word-pop': () => import('./word-pop/WordPop'),
 };

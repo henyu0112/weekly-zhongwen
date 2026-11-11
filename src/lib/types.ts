@@ -9,6 +9,10 @@ export interface GameResult {
   durationSec: number;
   /** Ids of vocabulary items practised (for future progress tracking). */
   vocabIds: string[];
+  /** Words the player got wrong or missed (feeds the mistake book). */
+  mistakeIds?: string[];
+  /** Words from the mistake book the player now got right. */
+  masteredIds?: string[];
   completedAt: string; // ISO date
 }
 
