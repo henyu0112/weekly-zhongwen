@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { TOPICS, type GameMeta } from '@/games/catalog';
 import { formatDate, loc, useT } from '@/lib/i18n';
 import { levelRangeText } from '@/lib/levels';
+import { GameArt } from './GameArt';
+import { TopicIcon } from './TopicIcon';
 
 export function GameCard({ game, featured = false }: { game: GameMeta; featured?: boolean }) {
   const { t, locale } = useT();
@@ -20,12 +22,10 @@ export function GameCard({ game, featured = false }: { game: GameMeta; featured?
           featured ? 'h-44 md:h-auto md:w-2/5' : 'h-32'
         }`}
       >
-        <span
-          aria-hidden
-          className={`transition-transform group-hover:scale-110 ${featured ? 'text-7xl md:text-8xl' : 'text-6xl'}`}
-        >
-          {game.emoji}
-        </span>
+        <GameArt
+          slug={game.slug}
+          className={`transition-transform group-hover:scale-110 ${featured ? 'size-32 md:size-44' : 'size-24'}`}
+        />
         <span
           className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-extrabold ${
             game.playable ? 'bg-white text-emerald-700' : 'bg-black/40 text-white'
@@ -51,8 +51,8 @@ export function GameCard({ game, featured = false }: { game: GameMeta; featured?
             {levelRangeText(game.standards, locale)}
           </span>
           {game.topics.map((tp) => (
-            <span key={tp} className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold">
-              {TOPICS[tp].emoji} {loc(TOPICS[tp].label, locale)}
+            <span key={tp} className="inline-flex items-center gap-1 rounded-full bg-soft px-2.5 py-1 text-xs font-bold">
+              <TopicIcon id={tp} /> {loc(TOPICS[tp].label, locale)}
             </span>
           ))}
         </div>

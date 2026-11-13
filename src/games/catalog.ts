@@ -9,14 +9,15 @@ export type TopicId =
   | 'wordtypes'
   | 'antonyms';
 
-export const TOPICS: Record<TopicId, { label: Localized; emoji: string }> = {
-  vocabulary: { label: { en: 'Vocabulary', zh: '词汇' }, emoji: '📚' },
-  wordtypes: { label: { en: 'Word types', zh: '词性' }, emoji: '🏷️' },
-  antonyms: { label: { en: 'Antonyms', zh: '反义词' }, emoji: '↔️' },
-  characters: { label: { en: 'Characters', zh: '汉字' }, emoji: '✍️' },
-  pinyin: { label: { en: 'Pinyin', zh: '拼音' }, emoji: '🔤' },
-  idioms: { label: { en: 'Idioms', zh: '成语' }, emoji: '🐉' },
-  sentences: { label: { en: 'Sentences', zh: '句子' }, emoji: '💬' },
+/** Icons for each topic live in components/TopicIcon.tsx. */
+export const TOPICS: Record<TopicId, { label: Localized }> = {
+  vocabulary: { label: { en: 'Vocabulary', zh: '词汇' } },
+  wordtypes: { label: { en: 'Word types', zh: '词性' } },
+  antonyms: { label: { en: 'Antonyms', zh: '反义词' } },
+  characters: { label: { en: 'Characters', zh: '汉字' } },
+  pinyin: { label: { en: 'Pinyin', zh: '拼音' } },
+  idioms: { label: { en: 'Idioms', zh: '成语' } },
+  sentences: { label: { en: 'Sentences', zh: '句子' } },
 };
 
 export interface GameMeta {
@@ -27,8 +28,7 @@ export interface GameMeta {
   howTo: Localized;
   /** Toneless pinyin of the title, so players can search by typing pinyin. */
   pinyin: string;
-  emoji: string;
-  /** Tailwind gradient classes for the card artwork. */
+  /** Tailwind gradient classes behind the game's illustration (components/GameArt.tsx, keyed by slug). */
   gradient: string;
   topics: TopicId[];
   /** Inclusive level range: 1–6 = Standard 1–6, 7–11 = Form 1–5. */
@@ -59,8 +59,7 @@ export const GAMES: GameMeta[] = [
       zh: '看清楚上方的规则，滑动（或点击）符合规则的水果。开始前可选择年级范围和难度。切错的词语会存进错题本。',
     },
     pinyin: 'han zi zhan qie shui guo',
-    emoji: '🍉',
-    gradient: 'from-rose-500 to-orange-400',
+    gradient: 'from-indigo-500 to-violet-700',
     topics: ['vocabulary', 'wordtypes', 'antonyms'],
     standards: [1, 11],
     releaseDate: '2026-11-09',
@@ -80,8 +79,7 @@ export const GAMES: GameMeta[] = [
       zh: '点击正确的答案。连续答对可获得额外加分。你有 45 秒！',
     },
     pinyin: 'han zi pao pao',
-    emoji: '🫧',
-    gradient: 'from-sky-400 to-indigo-500',
+    gradient: 'from-sky-400 to-blue-600',
     topics: ['vocabulary', 'characters'],
     standards: [1, 6],
     releaseDate: '2026-11-02',
@@ -101,7 +99,6 @@ export const GAMES: GameMeta[] = [
       zh: '用方向键或滑动来控制方向，依序吃下正确的汉字。',
     },
     pinyin: 'han zi tan chi she',
-    emoji: '🐍',
     gradient: 'from-emerald-400 to-teal-600',
     topics: ['characters', 'vocabulary'],
     standards: [1, 6],
@@ -122,7 +119,6 @@ export const GAMES: GameMeta[] = [
       zh: '向后拉动、瞄准，然后松手发射小鸟。',
     },
     pinyin: 'pin yin dan gong',
-    emoji: '🐦',
     gradient: 'from-amber-400 to-red-500',
     topics: ['pinyin'],
     standards: [1, 6],
@@ -141,7 +137,6 @@ export const GAMES: GameMeta[] = [
     },
     howTo: { en: 'Move and shoot.', zh: '移动并射击。' },
     pinyin: 'han zi bao wei zhan',
-    emoji: '🚀',
     gradient: 'from-violet-500 to-fuchsia-600',
     topics: ['characters'],
     standards: [1, 6],

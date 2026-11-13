@@ -1,7 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { ArrowLeft, Construction, Lock, Trophy } from 'lucide-react';
 import { TOPICS, getGame } from '@/games/catalog';
+import { GameArt } from './GameArt';
+import { TopicIcon } from './TopicIcon';
 import { GamePlayer } from './GamePlayer';
 import { formatDate, loc, useT } from '@/lib/i18n';
 import { isReleased, useNow } from '@/lib/games';
@@ -20,16 +23,16 @@ export function GameView({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-6">
-      <Link href="/games" className="inline-block text-sm font-bold text-brand">
-        ← {t('game.back')}
+      <Link href="/games" className="inline-flex items-center gap-1 text-sm font-bold text-brand">
+        <ArrowLeft className="size-4" aria-hidden /> {t('game.back')}
       </Link>
 
       <header className="flex items-center gap-4">
         <div
           aria-hidden
-          className={`grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br text-4xl ${game.gradient}`}
+          className={`grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ${game.gradient}`}
         >
-          {game.emoji}
+          <GameArt slug={game.slug} className="size-12" />
         </div>
         <div>
           <h1 className="text-3xl font-black">
@@ -44,16 +47,15 @@ export function GameView({ slug }: { slug: string }) {
       </header>
 
       {!released ? (
-        <div className="rounded-3xl border border-dashed border-line p-10 text-center text-muted">
-          🔒 {t('game.notReleased', { date: formatDate(game.releaseDate, locale) })}
+        <div className="flex flex-col items-center gap-3 rounded-3xl border border-dashed border-line p-10 text-center text-muted">
+          <Lock className="size-10 text-brand" aria-hidden strokeWidth={1.8} />
+          {t('game.notReleased', { date: formatDate(game.releaseDate, locale) })}
         </div>
       ) : game.playable ? (
         <GamePlayer slug={slug} />
       ) : (
         <div className="rounded-3xl border border-dashed border-line bg-surface p-10 text-center">
-          <div aria-hidden className="text-6xl">
-            🚧
-          </div>
+          <Construction className="mx-auto size-14 text-brand" aria-hidden strokeWidth={1.6} />
           <h2 className="mt-3 text-xl font-extrabold">{t('game.underConstruction')}</h2>
           <p className="mx-auto mt-2 max-w-md text-muted">{t('game.underConstructionDesc')}</p>
         </div>
@@ -68,8 +70,8 @@ export function GameView({ slug }: { slug: string }) {
               {levelRangeText(game.standards, locale)}
             </span>
             {game.topics.map((tp) => (
-              <span key={tp} className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold">
-                {TOPICS[tp].emoji} {loc(TOPICS[tp].label, locale)}
+              <span key={tp} className="inline-flex items-center gap-1 rounded-full bg-soft px-2.5 py-1 text-xs font-bold">
+                <TopicIcon id={tp} /> {loc(TOPICS[tp].label, locale)}
               </span>
             ))}
           </div>
@@ -77,7 +79,11 @@ export function GameView({ slug }: { slug: string }) {
         <section className="rounded-3xl border border-line bg-surface p-5">
           <h2 className="font-extrabold">{t('game.howTo')}</h2>
           <p className="mt-2 text-muted">{loc(game.howTo, locale)}</p>
-          {best !== undefined && <p className="mt-3 font-bold text-brand">🏆 {t('game.best', { n: best })}</p>}
+          {best !== undefined && (
+            <p className="mt-3 flex items-center gap-1.5 font-bold text-brand">
+              <Trophy className="size-4" aria-hidden /> {t('game.best', { n: best })}
+            </p>
+          )}
         </section>
       </div>
     </div>

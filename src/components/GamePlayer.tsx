@@ -1,6 +1,7 @@
 'use client';
 
 import { lazy, Suspense, useMemo, useRef } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { GAME_LOADERS } from '@/games/loaders';
 import { useSettings } from '@/lib/settings';
 import { useT } from '@/lib/i18n';
@@ -42,9 +43,9 @@ export function GamePlayer({ slug }: { slug: string }) {
             if (document.fullscreenElement) void document.exitFullscreen();
             else void box.current?.requestFullscreen?.();
           }}
-          className="rounded-full px-3 py-1.5 text-sm font-bold text-muted hover:bg-soft hover:text-fg"
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-muted hover:bg-soft hover:text-fg"
         >
-          ⛶ {t('game.fullscreen')}
+          <Maximize2 className="size-4" aria-hidden /> {t('game.fullscreen')}
         </button>
       </div>
       <Suspense fallback={<div className="grid h-80 place-items-center text-muted">{t('game.loading')}</div>}>

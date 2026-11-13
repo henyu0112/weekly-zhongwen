@@ -7,6 +7,7 @@ import { TOPICS, type TopicId } from '@/games/catalog';
 import { loc, useT } from '@/lib/i18n';
 import { searchGames, useReleasedGames } from '@/lib/games';
 import { LEVELS, levelName, levelShort } from '@/lib/levels';
+import { TopicIcon } from './TopicIcon';
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -14,7 +15,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`min-h-10 rounded-full border px-4 text-sm font-bold transition-colors ${
+      className={`inline-flex min-h-10 items-center gap-1.5 rounded-full border px-4 text-sm font-bold transition-colors ${
         active ? 'border-brand bg-brand text-brand-fg' : 'border-line bg-surface hover:bg-soft'
       }`}
     >
@@ -68,7 +69,7 @@ export function GamesView() {
           </Chip>
           {(Object.keys(TOPICS) as TopicId[]).map((id) => (
             <Chip key={id} active={topic === id} onClick={() => setTopic(topic === id ? null : id)}>
-              {TOPICS[id].emoji} {loc(TOPICS[id].label, locale)}
+              <TopicIcon id={id} /> {loc(TOPICS[id].label, locale)}
             </Chip>
           ))}
         </div>

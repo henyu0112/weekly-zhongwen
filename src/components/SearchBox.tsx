@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ArrowRight, Search } from 'lucide-react';
+import { GameArt } from './GameArt';
 import { useT, loc } from '@/lib/i18n';
 import { searchGames, useReleasedGames } from '@/lib/games';
 
@@ -32,9 +34,11 @@ export function SearchBox({ autoFocus = false, onDone }: { autoFocus?: boolean; 
         if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false);
       }}
     >
-      <span aria-hidden className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted">
-        🔍
-      </span>
+      <Search
+        aria-hidden
+        className="pointer-events-none absolute left-3.5 top-1/2 size-4.5 -translate-y-1/2 text-muted"
+        strokeWidth={2.2}
+      />
       <input
         type="search"
         value={q}
@@ -66,7 +70,12 @@ export function SearchBox({ autoFocus = false, onDone }: { autoFocus?: boolean; 
                       }}
                       className="flex items-center gap-3 px-4 py-2.5 hover:bg-soft"
                     >
-                      <span className="text-2xl">{g.emoji}</span>
+                      <span
+                        aria-hidden
+                        className={`grid size-9 shrink-0 place-items-center rounded-lg bg-gradient-to-br ${g.gradient}`}
+                      >
+                        <GameArt slug={g.slug} className="size-7" />
+                      </span>
                       <span className="font-bold">{loc(g.title, locale)}</span>
                       <span className="text-sm text-muted">{loc(g.title, locale === 'en' ? 'zh' : 'en')}</span>
                     </Link>
@@ -75,9 +84,9 @@ export function SearchBox({ autoFocus = false, onDone }: { autoFocus?: boolean; 
               </ul>
               <button
                 type="submit"
-                className="w-full border-t border-line px-4 py-2.5 text-left text-sm font-bold text-brand hover:bg-soft"
+                className="flex w-full items-center gap-1.5 border-t border-line px-4 py-2.5 text-left text-sm font-bold text-brand hover:bg-soft"
               >
-                {t('search.viewAll')} →
+                {t('search.viewAll')} <ArrowRight className="size-4" aria-hidden />
               </button>
             </>
           )}

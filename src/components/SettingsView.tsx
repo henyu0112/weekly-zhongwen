@@ -1,5 +1,6 @@
 'use client';
 
+import { Moon, RotateCcw, Sun } from 'lucide-react';
 import { settingsStore, useSettings, type Locale, type TextSize, type Theme } from '@/lib/settings';
 import { useT } from '@/lib/i18n';
 import { Hanzi } from './Hanzi';
@@ -23,7 +24,7 @@ function Segmented<T extends string>({
   label,
 }: {
   value: T;
-  options: { value: T; label: string }[];
+  options: { value: T; label: React.ReactNode }[];
   onChange: (v: T) => void;
   label: string;
 }) {
@@ -35,7 +36,7 @@ function Segmented<T extends string>({
           type="button"
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`min-h-10 min-w-16 rounded-full px-4 text-sm font-bold transition-colors ${
+          className={`inline-flex min-h-10 min-w-16 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-bold transition-colors ${
             value === o.value ? 'bg-brand text-brand-fg' : 'text-muted hover:text-fg'
           }`}
         >
@@ -93,8 +94,22 @@ export function SettingsView() {
             value={s.theme}
             onChange={(v) => settingsStore.set({ theme: v })}
             options={[
-              { value: 'light', label: `☀️ ${t('settings.theme.light')}` },
-              { value: 'dark', label: `🌙 ${t('settings.theme.dark')}` },
+              {
+                value: 'light',
+                label: (
+                  <>
+                    <Sun className="size-4" aria-hidden /> {t('settings.theme.light')}
+                  </>
+                ),
+              },
+              {
+                value: 'dark',
+                label: (
+                  <>
+                    <Moon className="size-4" aria-hidden /> {t('settings.theme.dark')}
+                  </>
+                ),
+              },
               { value: 'system', label: t('settings.theme.system') },
             ]}
           />
@@ -130,9 +145,9 @@ export function SettingsView() {
       <button
         type="button"
         onClick={() => settingsStore.reset()}
-        className="mt-6 rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-bold hover:bg-soft"
+        className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-5 py-2.5 text-sm font-bold hover:bg-soft"
       >
-        ↺ {t('settings.reset')}
+        <RotateCcw className="size-4" aria-hidden /> {t('settings.reset')}
       </button>
     </div>
   );

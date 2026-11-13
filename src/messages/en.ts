@@ -6,6 +6,7 @@ export const en = {
   'nav.games': 'Games',
   'nav.search': 'Search',
   'nav.settings': 'Settings',
+  'nav.closeSettings': 'Close settings',
   'nav.about': 'About',
   'nav.shop': 'Shop',
   'nav.quests': 'Quests',
@@ -89,6 +90,8 @@ export const en = {
   'about.p2':
     'Each week a new game is published, inspired by classic mobile and arcade games. Content follows what students meet from Standard 1 in primary school up to Form 5 in secondary school.',
   'about.p3': 'The site works on phones, tablets and computers, in English and Chinese.',
+  'about.credits':
+    'Credits: word pictures use Twemoji graphics © Twitter, Inc. and other contributors, licensed under CC-BY 4.0. Interface icons are from Lucide (ISC licence).',
 
   'notfound.title': 'Page not found',
   'notfound.desc': 'This page does not exist, but there are plenty of games to play!',

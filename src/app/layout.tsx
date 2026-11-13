@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#c8281f',
+  themeColor: '#1f5fd1',
 };
 
 // Applies saved theme / text size before first paint to avoid a flash.

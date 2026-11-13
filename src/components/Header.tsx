@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Search, Settings, X } from 'lucide-react';
+import { useSettingsToggle } from '@/lib/nav';
 import { Logo } from './Logo';
 import { SearchBox } from './SearchBox';
 import { LanguageSwitch } from './LanguageSwitch';
@@ -28,6 +30,7 @@ export function Header() {
   const { t } = useT();
   const pathname = usePathname();
   const [searchOpen, setSearchOpen] = useState(false);
+  const settingsToggle = useSettingsToggle();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
@@ -61,17 +64,23 @@ export function Header() {
             aria-label={t('nav.search')}
             aria-expanded={searchOpen}
             onClick={() => setSearchOpen((v) => !v)}
-            className="grid size-10 place-items-center rounded-full border border-line bg-surface text-lg md:hidden"
+            className="grid size-10 place-items-center rounded-full border border-line bg-surface md:hidden"
           >
-            🔍
+            <Search className="size-5" aria-hidden />
           </button>
           <LanguageSwitch />
           <Link
             href="/settings"
-            aria-label={t('nav.settings')}
-            className="grid size-10 place-items-center rounded-full border border-line bg-surface text-lg hover:bg-soft"
+            onClick={settingsToggle.onClick}
+            aria-label={settingsToggle.open ? t('nav.closeSettings') : t('nav.settings')}
+            aria-pressed={settingsToggle.open}
+            className={`grid size-10 place-items-center rounded-full border transition-colors ${
+              settingsToggle.open
+                ? 'border-brand bg-brand text-brand-fg'
+                : 'border-line bg-surface hover:bg-soft'
+            }`}
           >
-            ⚙️
+            {settingsToggle.open ? <X className="size-5" aria-hidden /> : <Settings className="size-5" aria-hidden />}
           </Link>
           {FEATURES.accounts && (
             <Link href="/profile" className="rounded-full bg-brand px-4 py-2 text-sm font-bold text-brand-fg">

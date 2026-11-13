@@ -1,8 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Flame, PartyPopper } from 'lucide-react';
 import { VOCAB, type VocabItem } from '@/data/vocab';
+import { GameArt } from '@/components/GameArt';
 import { Hanzi } from '@/components/Hanzi';
+import { WordArt } from '@/components/WordArt';
 import { beep } from '@/lib/sound';
 import type { GameProps } from '@/lib/types';
 
@@ -159,9 +162,16 @@ export default function WordPop({ locale, settings, onStart, onAnswer, onComplet
     return (
       <div className="grid min-h-[26rem] place-items-center bg-gradient-to-b from-sky-100 to-indigo-100 p-6 text-center text-slate-900 dark:from-sky-950 dark:to-indigo-950 dark:text-white">
         <div className="pop-in max-w-sm">
-          <div aria-hidden className="text-7xl">
-            {phase === 'done' ? '🎉' : '🫧'}
-          </div>
+          <span
+            aria-hidden
+            className="mx-auto grid size-24 place-items-center rounded-3xl bg-gradient-to-br from-sky-400 to-blue-600 shadow-lg"
+          >
+            {phase === 'done' ? (
+              <PartyPopper className="size-14 text-white" strokeWidth={1.7} />
+            ) : (
+              <GameArt slug="word-pop" className="size-20" />
+            )}
+          </span>
           <h2 className="mt-2 text-3xl font-black">{phase === 'done' ? tx.timeUp : tx.title}</h2>
           {phase === 'done' ? (
             <div className="mt-4 grid grid-cols-3 gap-3 text-center">
@@ -193,7 +203,14 @@ export default function WordPop({ locale, settings, onStart, onAnswer, onComplet
       <div className="mb-3 grid grid-cols-3 gap-2 text-center text-sm font-bold">
         <Stat label={tx.time} value={`${Math.max(timeLeft, 0)}s`} />
         <Stat label={tx.score} value={score} />
-        <Stat label={tx.streak} value={`🔥 ${streak}`} />
+        <Stat
+          label={tx.streak}
+          value={
+            <span className="inline-flex items-center gap-1">
+              <Flame className="size-5 text-orange-500" aria-hidden /> {streak}
+            </span>
+          }
+        />
       </div>
       <div className="mb-4 h-2 overflow-hidden rounded-full bg-white/60 dark:bg-white/20">
         <div
@@ -207,7 +224,7 @@ export default function WordPop({ locale, settings, onStart, onAnswer, onComplet
         <p className="text-sm font-bold text-slate-500 dark:text-slate-300">{q.kind === 'toHanzi' ? tx.q1 : tx.q2}</p>
         {q.kind === 'toHanzi' ? (
           <p className="mt-1">
-            <span className="text-7xl">{q.answer.emoji}</span>
+            <WordArt id={q.answer.id} className="mx-auto size-20 sm:size-24" />
             <span className="block text-lg font-bold text-slate-500 dark:text-slate-300">{q.answer.en}</span>
           </p>
         ) : (
@@ -243,7 +260,7 @@ export default function WordPop({ locale, settings, onStart, onAnswer, onComplet
                 </span>
               ) : (
                 <span className="flex flex-col items-center">
-                  <span className="text-4xl">{opt.emoji}</span>
+                  <WordArt id={opt.id} className="size-11" />
                   <span className="text-base font-bold">{opt.en}</span>
                 </span>
               )}
@@ -255,7 +272,7 @@ export default function WordPop({ locale, settings, onStart, onAnswer, onComplet
   );
 }
 
-function Stat({ label, value, big }: { label: string; value: string | number; big?: boolean }) {
+function Stat({ label, value, big }: { label: string; value: React.ReactNode; big?: boolean }) {
   return (
     <div className="rounded-2xl bg-white/80 px-2 py-2 dark:bg-slate-800/80">
       <div className="text-xs font-bold text-slate-500 dark:text-slate-300">{label}</div>

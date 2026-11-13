@@ -8,6 +8,7 @@ export const zh: Record<MessageKey, string> = {
   'nav.games': '游戏',
   'nav.search': '搜索',
   'nav.settings': '设置',
+  'nav.closeSettings': '关闭设置',
   'nav.about': '关于',
   'nav.shop': '商店',
   'nav.quests': '任务',
@@ -88,6 +89,8 @@ export const zh: Record<MessageKey, string> = {
   'about.p1': '每周中文（WeeklyZhongwen）通过简短有趣的小游戏，帮助学生练习中文。',
   'about.p2': '每周发布一款新游戏，灵感来自经典手机游戏和街机游戏，内容涵盖小学一年级至中学中五的学习内容。',
   'about.p3': '网站支持手机、平板和电脑，并提供中文和英文两种语言。',
+  'about.credits':
+    '致谢：词语图片使用 Twemoji 图形（© Twitter, Inc. 及其他贡献者），采用 CC-BY 4.0 授权；界面图标来自 Lucide（ISC 授权）。',
 
   'notfound.title': '找不到页面',
   'notfound.desc': '这个页面不存在，不过还有很多游戏等你来玩！',

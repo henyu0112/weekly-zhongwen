@@ -38,6 +38,13 @@ src/data         vocab.ts (Word Pop) and words.ts (tagged words for Hanzi Slash:
 
 Games with a future `releaseDate` stay hidden until that date (the weekly workflow rebuild is not required for this; it is checked in the browser).
 
+## Artwork (no emoji)
+
+- **Interface icons:** [Lucide](https://lucide.dev) (`lucide-react`, ISC licence).
+- **Game illustrations:** original SVGs in `src/components/GameArt.tsx`, keyed by game slug. Add a case there for each new game.
+- **Word pictures (Word Pop):** `public/art/words/<word id>.svg`, from Twemoji (CC-BY 4.0, credited on the About page).
+- **Colours:** theme tokens at the top of `src/app/globals.css` (blue theme, light and dark).
+
 ## Built for what comes next
 
 | Future feature | Where it plugs in |
