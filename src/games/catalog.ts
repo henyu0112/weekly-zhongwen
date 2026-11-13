@@ -51,12 +51,12 @@ export const GAMES: GameMeta[] = [
     slug: 'hanzi-slash',
     title: { en: 'Hanzi Slash', zh: '汉字斩' },
     description: {
-      en: 'Slice only the fruits whose words follow the rule, like adjectives, food words or antonyms. Every round brings a new rule, and a wrong cut costs a life!',
-      zh: '只切开符合规则的水果，例如形容词、食物类词语或反义词。每回合都有新规则，切错会失去一条命！',
+      en: 'Slice only the fruits whose words follow the rule, like adjectives, food words or antonyms. Every round brings a new rule. Cut a wrong fruit and it explodes, because it was a bomb in disguise!',
+      zh: '只切开符合规则的水果，例如形容词、食物类词语或反义词。每回合都有新规则。切错的水果会爆炸，它其实是伪装的炸弹！',
     },
     howTo: {
-      en: 'Read the rule at the top. Swipe (or tap) the fruits that match it. Choose your level range and difficulty first. Wrong words are saved in your mistake book (错题本).',
-      zh: '看清楚上方的规则，滑动（或点击）符合规则的水果。开始前可选择年级范围和难度。切错的词语会存进错题本。',
+      en: 'Read the rule at the top. Swipe (or tap) the fruits that match it. Never cut the black bombs with no word on them. Cut the glowing orbs to collect powerups (freeze, shield, hint lens, double points, extra life, defuse); you can turn them off in the menu. Wrong cuts cost a life and the words are saved in your mistake book (错题本).',
+      zh: '看清楚上方的规则，滑动（或点击）符合规则的水果。不要切没有词语的黑色炸弹。切开发光的圆球可获得道具（冰冻、护盾、提示镜、双倍分、加命、拆弹），可在菜单中关闭。切错会失去一条命，词语会存进错题本。',
     },
     pinyin: 'han zi zhan qie shui guo',
     gradient: 'from-indigo-500 to-violet-700',

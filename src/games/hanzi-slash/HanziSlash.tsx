@@ -13,10 +13,15 @@ import {
   PartyPopper,
   Pause,
   Pointer,
+  Search,
+  ShieldCheck,
+  Snowflake,
+  Sparkles,
   Star,
   Target,
   ThumbsUp,
   X,
+  Zap,
 } from 'lucide-react';
 import { GameArt } from '@/components/GameArt';
 import { POS_ZH, TOPIC_ZH, WORD_BY_ID, type Word } from '@/data/words';
@@ -49,13 +54,18 @@ interface Prefs {
   range: RangeId;
   difficulty: DifficultyId;
   input: InputMode;
+  /** null = automatic (on for Easy and Normal, off for Hard) until the player chooses. */
+  powerups: boolean | null;
 }
 
 const prefsStore = createPersistentStore<Prefs>('wz.hanzislash', {
   range: 'all',
   difficulty: 'normal',
   input: 'swipe',
+  powerups: null,
 });
+
+const powerupsEnabled = (p: Prefs) => p.powerups ?? p.difficulty !== 'hard';
 
 // ---------- small UI helpers ----------
 const SHELL = 'bg-gradient-to-b from-[#1b2440] to-[#3a2342] text-white';
@@ -129,6 +139,8 @@ export default function HanziSlash({ locale, settings, onStart, onAnswer, onComp
         mode,
         input: prefs.input,
         focusIds: mode === 'mistakes' ? mistakeIds : [],
+        // Mistake practice stays powerup-free so the words are what matters.
+        powerups: mode !== 'mistakes' && powerupsEnabled(prefs),
       });
       setScreen('play');
       onStart?.();
@@ -204,7 +216,7 @@ function Menu({
         <GameArt slug="hanzi-slash" className="mx-auto size-28" />
         <h2 className="mt-1 text-4xl font-black">汉字斩</h2>
         <p className="mt-2 text-sm font-bold text-white/70">
-          每回合都有一条新规则，只切符合规则的水果！切错会扣分，并失去一条命。
+          每回合都有一条新规则，只切符合规则的水果！切错的水果其实是伪装的炸弹，还有真正的炸弹，千万别切！
         </p>
       </div>
 
@@ -239,6 +251,21 @@ function Menu({
           <span className="inline-flex items-center gap-1.5">
             <Pointer className="size-4" aria-hidden /> 点击
           </span>
+        </Chip>
+      </Section>
+
+      <Section title="道具">
+        <Chip
+          active={powerupsEnabled(prefs)}
+          onClick={() => prefsStore.set({ powerups: true })}
+          sub="冰冻 · 护盾 · 提示镜 · 双倍分 · 加命 · 拆弹"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <Sparkles className="size-4" aria-hidden /> 开启
+          </span>
+        </Chip>
+        <Chip active={!powerupsEnabled(prefs)} onClick={() => prefsStore.set({ powerups: false })} sub="只有水果和炸弹">
+          关闭
         </Chip>
       </Section>
 
@@ -305,7 +332,7 @@ function PlayScreen({
   const [snap, setSnap] = useState<Snapshot | null>(null);
   const [roundInfo, setRoundInfo] = useState<{ n: number; title: string; sub: string } | null>(null);
   const [banner, setBanner] = useState(true);
-  const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
+  const [toast, setToast] = useState<{ id: number; text: string; tone?: 'info' } | null>(null);
   const [paused, setPaused] = useState(false);
 
   const finishRef = useRef(onFinish);
@@ -334,7 +361,7 @@ function PlayScreen({
           setBanner(true);
         },
         onRoundGo: () => setBanner(false),
-        onFeedback: (f) => setToast({ id: Date.now(), text: f.text }),
+        onFeedback: (f) => setToast({ id: Date.now(), text: f.text, tone: f.tone }),
         onAnswer: (c) => answerRef.current(c),
         onGameOver: () => finishRef.current(session),
       },
@@ -418,6 +445,21 @@ function PlayScreen({
       <div className="relative h-[min(66vh,540px)] min-h-[340px] overflow-hidden">
         <canvas ref={canvasRef} className="absolute left-0 top-0 block" />
 
+        {snap && (snap.powers.shield || snap.powers.freeze > 0 || snap.powers.hint > 0 || snap.powers.double > 0) && (
+          <div className="pointer-events-none absolute left-2 top-2 flex flex-wrap gap-1.5" aria-label="道具">
+            {snap.powers.shield && <PowerChip color="bg-blue-600" icon={<ShieldCheck className="size-4" aria-hidden />} label="护盾" />}
+            {snap.powers.freeze > 0 && (
+              <PowerChip color="bg-sky-500" icon={<Snowflake className="size-4" aria-hidden />} label={`冰冻 ${snap.powers.freeze}`} />
+            )}
+            {snap.powers.hint > 0 && (
+              <PowerChip color="bg-green-600" icon={<Search className="size-4" aria-hidden />} label={`提示 ${snap.powers.hint}`} />
+            )}
+            {snap.powers.double > 0 && (
+              <PowerChip color="bg-amber-500" icon={<Zap className="size-4" aria-hidden />} label={`双倍 ${snap.powers.double}`} />
+            )}
+          </div>
+        )}
+
         {banner && roundInfo && !paused && (
           <div className="pointer-events-none absolute inset-0 grid place-items-center bg-black/45 p-4">
             <div key={roundInfo.n} className="pop-in max-w-md text-center">
@@ -431,9 +473,16 @@ function PlayScreen({
         {toast && (
           <div
             key={toast.id}
-            className="pop-in pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-2xl bg-red-600/95 px-4 py-3 text-center text-sm font-extrabold shadow-lg sm:text-base"
+            className={`pop-in pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-center text-sm font-extrabold shadow-lg sm:text-base ${
+              toast.tone === 'info' ? 'bg-sky-600/95' : 'bg-red-600/95'
+            }`}
           >
-            <X className="size-5 shrink-0" aria-hidden strokeWidth={3} /> <span>{toast.text}</span>
+            {toast.tone === 'info' ? (
+              <ShieldCheck className="size-5 shrink-0" aria-hidden />
+            ) : (
+              <X className="size-5 shrink-0" aria-hidden strokeWidth={3} />
+            )}{' '}
+            <span>{toast.text}</span>
           </div>
         )}
 
@@ -460,6 +509,14 @@ function PlayScreen({
         )}
       </div>
     </div>
+  );
+}
+
+function PowerChip({ color, icon, label }: { color: string; icon: React.ReactNode; label: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-black text-white shadow ${color}`}>
+      {icon} {label}
+    </span>
   );
 }
 
@@ -526,6 +583,9 @@ function OverScreen({
         ))}
       </div>
       {practice && <p className="text-center text-xs font-bold text-white/60">练习模式不计入最高分</p>}
+      {session.bombHits > 0 && (
+        <p className="text-center text-sm font-extrabold text-orange-300">切到真炸弹 {session.bombHits} 次（没有词语的黑色炸弹不能切）</p>
+      )}
       {session.mastered.size > 0 && (
         <p className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500/20 px-4 py-2 text-center text-sm font-extrabold text-emerald-200">
           <Check className="size-4" aria-hidden strokeWidth={3} /> 已从错题本移除 {session.mastered.size} 个词语
