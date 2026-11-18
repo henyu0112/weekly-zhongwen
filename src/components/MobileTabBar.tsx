@@ -17,38 +17,52 @@ const TABS: { href: string; key: MessageKey; Icon: LucideIcon; show: boolean }[]
   { href: '/settings', key: 'nav.settings', Icon: Settings, show: true },
 ];
 
-/** Thumb-friendly bottom navigation, phones only. */
+/** Thumb-friendly bottom navigation, phones only. A pill slides behind the active tab. */
 export function MobileTabBar() {
   const { t } = useT();
   const pathname = usePathname();
   const settingsToggle = useSettingsToggle();
   const tabs = TABS.filter((tab) => tab.show);
+  const activeIndex = tabs.findIndex((tab) => isActive(pathname, tab.href));
   return (
     <nav
       aria-label="Mobile"
-      className="fixed inset-x-0 bottom-0 z-40 grid border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
-      style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden"
     >
-      {tabs.map((tab) => {
-        const active = isActive(pathname, tab.href);
-        const isSettingsTab = tab.href === '/settings';
-        const Icon = isSettingsTab && settingsToggle.open ? X : tab.Icon;
-        return (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            onClick={isSettingsTab ? settingsToggle.onClick : undefined}
-            aria-current={active ? 'page' : undefined}
-            aria-label={isSettingsTab && settingsToggle.open ? t('nav.closeSettings') : undefined}
-            className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-bold ${
-              active ? 'text-brand' : 'text-muted'
-            }`}
-          >
-            <Icon aria-hidden className="size-6" strokeWidth={active ? 2.4 : 2} />
-            {t(tab.key)}
-          </Link>
-        );
-      })}
+      <div className="relative grid" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
+        {/* sliding indicator: one column wide, holds a pill behind the icon */}
+        <span
+          aria-hidden
+          className={`pointer-events-none absolute left-0 top-0 flex h-full justify-center transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.4,0.64,1)] ${
+            activeIndex < 0 ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ width: `${100 / tabs.length}%`, transform: `translateX(${Math.max(0, activeIndex) * 100}%)` }}
+        >
+          <span className="mt-1.5 h-8 w-14 rounded-full bg-soft" />
+        </span>
+        {tabs.map((tab) => {
+          const active = isActive(pathname, tab.href);
+          const isSettingsTab = tab.href === '/settings';
+          const Icon = isSettingsTab && settingsToggle.open ? X : tab.Icon;
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              onClick={isSettingsTab ? settingsToggle.onClick : undefined}
+              aria-current={active ? 'page' : undefined}
+              aria-label={isSettingsTab && settingsToggle.open ? t('nav.closeSettings') : undefined}
+              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-bold transition-colors ${
+                active ? 'text-brand' : 'text-muted'
+              }`}
+            >
+              <span className="grid h-8 place-items-center">
+                <Icon aria-hidden className={`size-6 ${active ? 'tab-pop' : ''}`} strokeWidth={active ? 2.4 : 2} />
+              </span>
+              {t(tab.key)}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

@@ -95,6 +95,8 @@ export const en = {
 
   'nav.profile': 'Profile',
   'status.level': 'Level {n}',
+  'status.menu': 'Your progress',
+  'status.levelUp': 'Level up! Level {n}',
 
   'profile.title': 'My profile',
   'profile.defaultName': 'Little learner',

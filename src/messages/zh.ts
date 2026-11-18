@@ -94,6 +94,8 @@ export const zh: Record<MessageKey, string> = {
 
   'nav.profile': '我的',
   'status.level': '{n} 级',
+  'status.menu': '我的进度',
+  'status.levelUp': '升级啦！{n} 级',
 
   'profile.title': '我的资料',
   'profile.defaultName': '小学员',
