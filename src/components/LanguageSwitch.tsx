@@ -24,7 +24,7 @@ export function LanguageSwitch() {
           aria-label={o.aria}
           aria-pressed={language === o.value}
           onClick={() => settingsStore.set({ language: o.value })}
-          className={`min-w-11 rounded-full px-3 py-1.5 transition-colors ${
+          className={`min-w-11 whitespace-nowrap rounded-full px-3 py-1.5 transition-colors ${
             language === o.value ? 'bg-brand text-brand-fg' : 'text-muted hover:text-fg'
           }`}
         >

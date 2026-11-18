@@ -2,6 +2,7 @@ import { beep } from '@/lib/sound';
 import { drawBomb, drawFruit, drawHalf, drawPower, FRUITS, POWER_COLORS, type FruitKind } from './fruit';
 import type { Round, RoundItem } from './rules';
 import { FREEZE_SPEED, type PowerKind, type Session, type Snapshot } from './session';
+import { drawTrail, paintBoard, TRAIL_LIFE } from './skins';
 
 const POWER_LABEL: Record<PowerKind, string> = {
   freeze: '冰冻！',
@@ -17,17 +18,6 @@ const TAU = Math.PI * 2;
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 const pickOne = <T,>(arr: readonly T[]): T => arr[Math.floor(Math.random() * arr.length)];
-
-/** Small seeded random so the wood grain looks the same after every resize. */
-function seeded(seed: number) {
-  return () => {
-    seed |= 0;
-    seed = (seed + 0x6d2b79f5) | 0;
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 export interface EngineCallbacks {
   onState(s: Snapshot): void;
@@ -45,6 +35,9 @@ export interface EngineOptions {
   inputMode: 'swipe' | 'tap';
   showPinyin: boolean;
   sound: boolean;
+  /** Shop skin ids (src/data/shop.ts). */
+  boardSkin: string;
+  bladeSkin: string;
 }
 
 interface Fruit {
@@ -230,7 +223,7 @@ export class SlashEngine {
 
   private buildLayers() {
     const [board, bctx] = this.newLayer();
-    this.paintBoard(bctx, this.w, this.h);
+    paintBoard(bctx, this.w, this.h, this.opts.boardSkin);
     this.board = board;
 
     const old = this.stain;
@@ -238,89 +231,6 @@ export class SlashEngine {
     if (old) sctx.drawImage(old, 0, 0, this.w, this.h); // keep existing stains across a resize
     this.stain = stain;
     this.stainCtx = sctx;
-  }
-
-  /** A wooden cutting board: planks, grain, knots, seams, knife scars. */
-  private paintBoard(ctx: CanvasRenderingContext2D, w: number, h: number) {
-    const rnd = seeded(7);
-    const plankW = clamp(w / 4, 110, 210);
-    const count = Math.ceil(w / plankW);
-    const tones = ['#d9a768', '#cf9c5d', '#ddb073', '#c9955b', '#d4a266'];
-
-    for (let i = 0; i < count; i++) {
-      const x = i * plankW;
-      ctx.fillStyle = tones[i % tones.length];
-      ctx.fillRect(x, 0, plankW + 1, h);
-
-      const shade = ctx.createLinearGradient(x, 0, x + plankW, 0);
-      shade.addColorStop(0, 'rgba(255,232,185,0.2)');
-      shade.addColorStop(0.5, 'rgba(0,0,0,0)');
-      shade.addColorStop(1, 'rgba(70,35,8,0.18)');
-      ctx.fillStyle = shade;
-      ctx.fillRect(x, 0, plankW + 1, h);
-
-      // grain lines
-      ctx.lineCap = 'round';
-      for (let k = 0; k < 24; k++) {
-        const gx = x + rnd() * plankW;
-        const phase = rnd() * 6;
-        ctx.strokeStyle = `rgba(95,52,16,${0.06 + rnd() * 0.1})`;
-        ctx.lineWidth = 0.7 + rnd() * 1.5;
-        ctx.beginPath();
-        for (let y = -6; y <= h + 6; y += 18) {
-          const px = gx + Math.sin(y * 0.011 + phase) * 4 + Math.sin(y * 0.037 + phase * 2) * 1.2;
-          if (y === -6) ctx.moveTo(px, y);
-          else ctx.lineTo(px, y);
-        }
-        ctx.stroke();
-      }
-
-      // a knot in some planks
-      if (rnd() < 0.6) {
-        const kx = x + plankW * (0.25 + rnd() * 0.5);
-        const ky = h * (0.15 + rnd() * 0.7);
-        for (let ring = 4; ring >= 1; ring--) {
-          ctx.strokeStyle = `rgba(80,42,12,${0.12 + (4 - ring) * 0.05})`;
-          ctx.lineWidth = 1.4;
-          ctx.beginPath();
-          ctx.ellipse(kx, ky, ring * 5, ring * 9, 0, 0, TAU);
-          ctx.stroke();
-        }
-        ctx.fillStyle = 'rgba(70,35,10,0.32)';
-        ctx.beginPath();
-        ctx.ellipse(kx, ky, 4, 8, 0, 0, TAU);
-        ctx.fill();
-      }
-
-      // seam between planks
-      if (i > 0) {
-        ctx.fillStyle = 'rgba(55,27,6,0.55)';
-        ctx.fillRect(x - 1, 0, 2, h);
-        ctx.fillStyle = 'rgba(255,238,200,0.3)';
-        ctx.fillRect(x + 1, 0, 1.2, h);
-      }
-    }
-
-    // knife scars
-    for (let i = 0; i < 16; i++) {
-      const sx = rnd() * w;
-      const sy = rnd() * h;
-      const a = rnd() * Math.PI;
-      const len = 24 + rnd() * 70;
-      ctx.strokeStyle = rnd() < 0.5 ? 'rgba(255,242,215,0.2)' : 'rgba(70,35,8,0.2)';
-      ctx.lineWidth = 0.8 + rnd();
-      ctx.beginPath();
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(sx + Math.cos(a) * len, sy + Math.sin(a) * len);
-      ctx.stroke();
-    }
-
-    // vignette for depth
-    const v = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
-    v.addColorStop(0, 'rgba(60,28,6,0)');
-    v.addColorStop(1, 'rgba(60,28,6,0.4)');
-    ctx.fillStyle = v;
-    ctx.fillRect(0, 0, w, h);
   }
 
   // ---------- stains left on the board ----------
@@ -851,7 +761,7 @@ export class SlashEngine {
     this.floaters = this.floaters.filter((fl) => fl.life > 0);
 
     for (const t of this.trail) t.age += dt;
-    this.trail = this.trail.filter((t) => t.age < 0.22);
+    this.trail = this.trail.filter((t) => t.age < TRAIL_LIFE);
 
     if (this.state === 'clearing' && this.fruits.length === 0) {
       const bonus = this.session.endRound();
@@ -942,32 +852,8 @@ export class SlashEngine {
     // explosions
     for (const b of this.blasts) this.drawBlast(b);
 
-    // slash trail: dark underlay so it reads on light wood, then a bright blade line
-    if (this.trail.length > 1) {
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      for (let i = 1; i < this.trail.length; i++) {
-        const a = this.trail[i - 1];
-        const b = this.trail[i];
-        const life = 1 - b.age / 0.22;
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = `rgba(60,30,8,${0.4 * life})`;
-        ctx.lineWidth = 6 + 9 * life;
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
-        ctx.strokeStyle = `rgba(255,255,255,${0.95 * life})`;
-        ctx.shadowColor = 'rgba(255,255,255,0.9)';
-        ctx.shadowBlur = 10;
-        ctx.lineWidth = 2 + 6 * life;
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
-      }
-      ctx.shadowBlur = 0;
-    }
+    // slash trail in the equipped blade skin
+    drawTrail(ctx, this.trail, this.opts.bladeSkin, this.clock);
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

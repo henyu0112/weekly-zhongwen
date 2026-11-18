@@ -1,6 +1,9 @@
 'use client';
 
-import { Moon, RotateCcw, Sun } from 'lucide-react';
+import Link from 'next/link';
+import { Info, Moon, RotateCcw, Sun } from 'lucide-react';
+import { FEATURES } from '@/lib/config';
+import { DevTools } from './DevTools';
 import { settingsStore, useSettings, type Locale, type TextSize, type Theme } from '@/lib/settings';
 import { useT } from '@/lib/i18n';
 import { Hanzi } from './Hanzi';
@@ -149,6 +152,15 @@ export function SettingsView() {
       >
         <RotateCcw className="size-4" aria-hidden /> {t('settings.reset')}
       </button>
+
+      <Link
+        href="/about"
+        className="mt-8 flex items-center gap-2 border-t border-line pt-5 text-sm font-bold text-brand hover:underline"
+      >
+        <Info className="size-4" aria-hidden /> {t('nav.about')}
+      </Link>
+
+      {FEATURES.devTools && <DevTools />}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   BookMarked,
   Check,
+  Coins,
   Flame,
   Hand,
   Heart,
@@ -24,6 +25,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { GameArt } from '@/components/GameArt';
+import { levelProgress, type RewardKey, type RewardSummary } from '@/lib/economy';
 import { POS_ZH, TOPIC_ZH, WORD_BY_ID, type Word } from '@/data/words';
 import { profileStore, useProfile } from '@/lib/profile';
 import { createPersistentStore, useStore } from '@/lib/store';
@@ -118,12 +120,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // ---------- main component ----------
 type Screen = 'menu' | 'play' | 'over' | 'book';
 
-export default function HanziSlash({ locale, settings, onStart, onAnswer, onComplete }: GameProps) {
+export default function HanziSlash({ locale, settings, player, onStart, onAnswer, onComplete }: GameProps) {
   const prefs = useStore(prefsStore);
   const profile = useProfile();
   const [screen, setScreen] = useState<Screen>('menu');
   const [config, setConfig] = useState<GameConfig | null>(null);
   const [finished, setFinished] = useState<Session | null>(null);
+  const [reward, setReward] = useState<RewardSummary | null>(null);
   const reported = useRef(false);
 
   const mistakeIds = useMemo(() => Object.keys(profile.mistakes).filter((id) => WORD_BY_ID[id]), [profile.mistakes]);
@@ -152,9 +155,7 @@ export default function HanziSlash({ locale, settings, onStart, onAnswer, onComp
     (session: Session) => {
       if (reported.current) return;
       reported.current = true;
-      setFinished(session);
-      setScreen('over');
-      onComplete({
+      const summary = onComplete({
         // Practice rounds do not count towards the high score.
         score: session.practice ? 0 : session.score,
         correct: session.correct,
@@ -163,7 +164,15 @@ export default function HanziSlash({ locale, settings, onStart, onAnswer, onComp
         vocabIds: [...session.seen],
         mistakeIds: [...new Set(session.mistakes.map((m) => m.word.id))],
         masteredIds: [...session.mastered],
+        correctIds: [...session.correctIds],
+        perfectRounds: session.perfectRounds,
+        stars: session.stars(),
+        practice: session.practice,
+        difficulty: session.config.difficulty,
       });
+      setReward(summary);
+      setFinished(session);
+      setScreen('over');
     },
     [onComplete],
   );
@@ -177,6 +186,7 @@ export default function HanziSlash({ locale, settings, onStart, onAnswer, onComp
         <PlayScreen
           config={config}
           settings={settings}
+          equipped={player.equipped}
           onAnswer={(c) => onAnswer?.(c)}
           onFinish={finish}
           onQuit={() => setScreen('menu')}
@@ -185,6 +195,7 @@ export default function HanziSlash({ locale, settings, onStart, onAnswer, onComp
       {screen === 'over' && finished && (
         <OverScreen
           session={finished}
+          reward={reward}
           locale={locale}
           onAgain={() => start(finished.config.mode)}
           onMenu={() => setScreen('menu')}
@@ -316,12 +327,14 @@ function Menu({
 function PlayScreen({
   config,
   settings,
+  equipped,
   onAnswer,
   onFinish,
   onQuit,
 }: {
   config: GameConfig;
   settings: GameProps['settings'];
+  equipped: Record<string, string>;
   onAnswer: (correct: boolean) => void;
   onFinish: (s: Session) => void;
   onQuit: () => void;
@@ -353,6 +366,8 @@ function PlayScreen({
         inputMode: config.input,
         showPinyin: settings.pinyin || DIFFICULTIES[config.difficulty].forcePinyin,
         sound: settings.sound,
+        boardSkin: equipped['slash.board'] ?? 'board.wood',
+        bladeSkin: equipped['slash.blade'] ?? 'blade.white',
       },
       {
         onState: setSnap,
@@ -512,6 +527,81 @@ function PlayScreen({
   );
 }
 
+const REWARD_LABEL: Record<RewardKey, (n?: number) => string> = {
+  correct: (n) => `答对 ×${n}`,
+  newWords: (n) => `新学词语 ×${n}`,
+  mastered: (n) => `掌握错题 ×${n}`,
+  perfect: (n) => `完美回合 ×${n}`,
+  finish: () => '完成游戏',
+  stars: (n) => `星星 ×${n}`,
+  difficulty: () => '难度加成',
+  practice: () => '练习模式（经验减半）',
+  daily: () => '每日首局奖励',
+  levelUp: (n) => `升级奖励 ×${n}`,
+};
+
+/** XP / coins earned this game, with an animated level bar. */
+function RewardPanel({ reward }: { reward: RewardSummary }) {
+  const after = levelProgress(reward.xpAfter);
+  const leveledUp = reward.levelAfter > reward.levelBefore;
+  const startRatio = leveledUp ? 0 : levelProgress(reward.xpBefore).ratio;
+  const [ratio, setRatio] = useState(startRatio);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setRatio(after.ratio));
+    return () => cancelAnimationFrame(id);
+  }, [after.ratio]);
+
+  return (
+    <section className="pop-in space-y-3 rounded-2xl bg-white/10 p-4" aria-label="奖励">
+      {leveledUp && (
+        <p className="flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-3 py-2 text-center font-black text-slate-900">
+          <PartyPopper className="size-5" aria-hidden /> 升级了！现在是 {reward.levelAfter} 级
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-2 text-center">
+        <div className="rounded-xl bg-sky-500/20 py-2">
+          <div className="text-xs font-bold text-sky-200">经验</div>
+          <div className="flex items-center justify-center gap-1 text-2xl font-black text-sky-100">
+            <Sparkles className="size-5" aria-hidden /> +{reward.xp}
+          </div>
+        </div>
+        <div className="rounded-xl bg-amber-400/20 py-2">
+          <div className="text-xs font-bold text-amber-200">金币</div>
+          <div className="flex items-center justify-center gap-1 text-2xl font-black text-amber-100">
+            <Coins className="size-5" aria-hidden /> +{reward.coins}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div className="mb-1 flex justify-between text-xs font-bold text-white/70">
+          <span>{after.level} 级</span>
+          <span>
+            {after.into} / {after.need} 经验
+          </span>
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-white/15">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500 transition-[width] duration-1000 ease-out"
+            style={{ width: `${Math.round(ratio * 100)}%` }}
+          />
+        </div>
+      </div>
+      <ul className="grid gap-1 text-sm font-bold text-white/80 sm:grid-cols-2">
+        {reward.lines.map((l) => (
+          <li key={l.key} className="flex justify-between gap-2 rounded-lg bg-white/5 px-2.5 py-1">
+            <span>{REWARD_LABEL[l.key](l.count)}</span>
+            <span className="whitespace-nowrap">
+              {l.xp !== 0 && <span className="text-sky-200">{l.xp > 0 ? `+${l.xp}` : l.xp} 经验</span>}
+              {l.xp !== 0 && l.coins !== 0 && ' · '}
+              {l.coins !== 0 && <span className="text-amber-200">+{l.coins} 金币</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function PowerChip({ color, icon, label }: { color: string; icon: React.ReactNode; label: string }) {
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-black text-white shadow ${color}`}>
@@ -523,12 +613,14 @@ function PowerChip({ color, icon, label }: { color: string; icon: React.ReactNod
 // ---------- game over ----------
 function OverScreen({
   session,
+  reward,
   locale,
   onAgain,
   onMenu,
   onBook,
 }: {
   session: Session;
+  reward: RewardSummary | null;
   locale: Locale;
   onAgain: () => void;
   onMenu: () => void;
@@ -583,6 +675,7 @@ function OverScreen({
         ))}
       </div>
       {practice && <p className="text-center text-xs font-bold text-white/60">练习模式不计入最高分</p>}
+      {reward && <RewardPanel reward={reward} />}
       {session.bombHits > 0 && (
         <p className="text-center text-sm font-extrabold text-orange-300">切到真炸弹 {session.bombHits} 次（没有词语的黑色炸弹不能切）</p>
       )}

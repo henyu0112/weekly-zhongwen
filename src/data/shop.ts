@@ -1,0 +1,57 @@
+import type { Localized } from '@/lib/types';
+
+/**
+ * Shop catalogue. Items are cosmetic only: they change how things look and
+ * never make a game easier. Add new items here; no other code changes needed
+ * unless a game gets a brand-new slot.
+ */
+export type SlotId = 'slash.board' | 'slash.blade' | 'frame';
+
+export interface ShopSlot {
+  id: SlotId;
+  name: Localized;
+}
+
+export const SHOP_SLOTS: ShopSlot[] = [
+  { id: 'slash.board', name: { en: 'Hanzi Slash · Cutting board', zh: '汉字斩 · 砧板' } },
+  { id: 'slash.blade', name: { en: 'Hanzi Slash · Blade trail', zh: '汉字斩 · 刀光' } },
+  { id: 'frame', name: { en: 'Avatar frame', zh: '头像框' } },
+];
+
+export interface ShopItem {
+  id: string;
+  slot: SlotId;
+  name: Localized;
+  price: number;
+  /** Player level needed before it can be bought or claimed. */
+  level: number;
+  /** Free starter item, owned by everyone. */
+  default?: boolean;
+}
+
+export const SHOP_ITEMS: ShopItem[] = [
+  // Hanzi Slash cutting boards
+  { id: 'board.wood', slot: 'slash.board', name: { en: 'Classic wood', zh: '经典木纹' }, price: 0, level: 1, default: true },
+  { id: 'board.bamboo', slot: 'slash.board', name: { en: 'Bamboo', zh: '竹子' }, price: 120, level: 1 },
+  { id: 'board.walnut', slot: 'slash.board', name: { en: 'Dark walnut', zh: '深色胡桃木' }, price: 150, level: 2 },
+  { id: 'board.marble', slot: 'slash.board', name: { en: 'Marble', zh: '大理石' }, price: 200, level: 3 },
+  { id: 'board.chalk', slot: 'slash.board', name: { en: 'Chalkboard', zh: '黑板' }, price: 250, level: 5 },
+
+  // Hanzi Slash blade trails
+  { id: 'blade.white', slot: 'slash.blade', name: { en: 'Classic white', zh: '经典白光' }, price: 0, level: 1, default: true },
+  { id: 'blade.fire', slot: 'slash.blade', name: { en: 'Fire', zh: '火焰' }, price: 100, level: 1 },
+  { id: 'blade.ice', slot: 'slash.blade', name: { en: 'Ice', zh: '冰霜' }, price: 100, level: 2 },
+  { id: 'blade.rainbow', slot: 'slash.blade', name: { en: 'Rainbow', zh: '彩虹' }, price: 180, level: 4 },
+  { id: 'blade.ink', slot: 'slash.blade', name: { en: 'Ink brush', zh: '毛笔墨迹' }, price: 220, level: 6 },
+
+  // Avatar frames (level rewards are free to claim)
+  { id: 'frame.none', slot: 'frame', name: { en: 'No frame', zh: '无边框' }, price: 0, level: 1, default: true },
+  { id: 'frame.bronze', slot: 'frame', name: { en: 'Bronze', zh: '青铜框' }, price: 0, level: 5 },
+  { id: 'frame.jade', slot: 'frame', name: { en: 'Jade', zh: '翡翠框' }, price: 250, level: 3 },
+  { id: 'frame.silver', slot: 'frame', name: { en: 'Silver', zh: '白银框' }, price: 0, level: 10 },
+  { id: 'frame.gold', slot: 'frame', name: { en: 'Gold', zh: '黄金框' }, price: 0, level: 20 },
+];
+
+export const SHOP_ITEM_BY_ID: Record<string, ShopItem> = Object.fromEntries(SHOP_ITEMS.map((i) => [i.id, i]));
+
+export const defaultItemFor = (slot: SlotId) => SHOP_ITEMS.find((i) => i.slot === slot && i.default)!;

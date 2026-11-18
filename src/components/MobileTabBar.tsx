@@ -2,17 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Gamepad2, House, Info, Settings, X, type LucideIcon } from 'lucide-react';
+import { Gamepad2, House, Settings, ShoppingBag, UserRound, X, type LucideIcon } from 'lucide-react';
+import { FEATURES } from '@/lib/config';
 import { useT } from '@/lib/i18n';
 import { useSettingsToggle } from '@/lib/nav';
 import { isActive } from './Header';
 import type { MessageKey } from '@/messages/en';
 
-const TABS: { href: string; key: MessageKey; Icon: LucideIcon }[] = [
-  { href: '/', key: 'nav.home', Icon: House },
-  { href: '/games', key: 'nav.games', Icon: Gamepad2 },
-  { href: '/settings', key: 'nav.settings', Icon: Settings },
-  { href: '/about', key: 'nav.about', Icon: Info },
+const TABS: { href: string; key: MessageKey; Icon: LucideIcon; show: boolean }[] = [
+  { href: '/', key: 'nav.home', Icon: House, show: true },
+  { href: '/games', key: 'nav.games', Icon: Gamepad2, show: true },
+  { href: '/shop', key: 'nav.shop', Icon: ShoppingBag, show: FEATURES.shop },
+  { href: '/profile', key: 'nav.profile', Icon: UserRound, show: FEATURES.profile },
+  { href: '/settings', key: 'nav.settings', Icon: Settings, show: true },
 ];
 
 /** Thumb-friendly bottom navigation, phones only. */
@@ -20,12 +22,14 @@ export function MobileTabBar() {
   const { t } = useT();
   const pathname = usePathname();
   const settingsToggle = useSettingsToggle();
+  const tabs = TABS.filter((tab) => tab.show);
   return (
     <nav
       aria-label="Mobile"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden"
+      style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
     >
-      {TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = isActive(pathname, tab.href);
         const isSettingsTab = tab.href === '/settings';
         const Icon = isSettingsTab && settingsToggle.open ? X : tab.Icon;

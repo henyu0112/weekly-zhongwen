@@ -40,6 +40,8 @@ export interface GameMeta {
   inspiredBy?: string;
   /** false = sample entry, game not built yet. */
   playable: boolean;
+  /** Earns XP and coins (src/lib/economy.ts). Switch on per game once it reports full results. */
+  rewards?: boolean;
 }
 
 /**
@@ -66,6 +68,7 @@ export const GAMES: GameMeta[] = [
     tags: ['slash', 'fruit', 'swipe', 'rules', 'mistake book'],
     inspiredBy: 'Fruit Ninja',
     playable: true,
+    rewards: true,
   },
   {
     slug: 'word-pop',

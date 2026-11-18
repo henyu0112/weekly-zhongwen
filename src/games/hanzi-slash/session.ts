@@ -155,6 +155,9 @@ export class Session {
   mistakes: MistakeEntry[] = [];
   mastered = new Set<string>();
   seen = new Set<string>();
+  /** Words cut correctly this run. */
+  correctIds = new Set<string>();
+  perfectRounds = 0;
   over = false;
 
   /** Powerups collected so far this run. */
@@ -307,6 +310,7 @@ export class Session {
       this.combo += 1;
       this.bestCombo = Math.max(this.bestCombo, this.combo);
       this.correct += 1;
+      this.correctIds.add(item.word.id);
       if (this.focus.has(item.word.id)) this.mastered.add(item.word.id);
       this.emit();
       return { ok: true, delta, over: false };
@@ -386,6 +390,7 @@ export class Session {
   endRound(): number {
     if (this.over) return 0;
     if (!this.roundFlawless) return 0;
+    this.perfectRounds += 1;
     this.score += PERFECT_BONUS;
     this.emit();
     return PERFECT_BONUS;

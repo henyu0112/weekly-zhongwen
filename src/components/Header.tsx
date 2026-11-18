@@ -18,7 +18,9 @@ export const NAV: { href: string; key: MessageKey; show: boolean }[] = [
   { href: '/games', key: 'nav.games', show: true },
   { href: '/quests', key: 'nav.quests', show: FEATURES.quests },
   { href: '/shop', key: 'nav.shop', show: FEATURES.shop },
-  { href: '/about', key: 'nav.about', show: true },
+  { href: '/profile', key: 'nav.profile', show: FEATURES.profile },
+  // About lives in the footer and on the Settings page once the nav has shop + profile.
+  { href: '/about', key: 'nav.about', show: !FEATURES.shop && !FEATURES.profile },
 ];
 
 export const isActive = (pathname: string, href: string) => {
@@ -43,7 +45,7 @@ export function Header() {
               key={n.href}
               href={n.href}
               aria-current={isActive(pathname, n.href) ? 'page' : undefined}
-              className={`rounded-full px-3.5 py-2 text-sm font-bold transition-colors ${
+              className={`whitespace-nowrap rounded-full px-3 py-2 text-sm font-bold transition-colors ${
                 isActive(pathname, n.href) ? 'bg-soft text-brand' : 'text-muted hover:text-fg'
               }`}
             >
@@ -52,11 +54,12 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden w-full max-w-sm md:block">
+        {/* Full search box only on wide screens; mid-size and phones use the search button. */}
+        <div className="ml-auto hidden w-full max-w-sm lg:block">
           <SearchBox />
         </div>
 
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
           {/* Reserved slot: level bar + coins appear here when FEATURES.economy is on. */}
           <PlayerStatus />
           <button
@@ -64,7 +67,7 @@ export function Header() {
             aria-label={t('nav.search')}
             aria-expanded={searchOpen}
             onClick={() => setSearchOpen((v) => !v)}
-            className="grid size-10 place-items-center rounded-full border border-line bg-surface md:hidden"
+            className="grid size-10 place-items-center rounded-full border border-line bg-surface lg:hidden"
           >
             <Search className="size-5" aria-hidden />
           </button>
@@ -91,7 +94,7 @@ export function Header() {
       </div>
 
       {searchOpen && (
-        <div className="border-t border-line px-4 py-3 md:hidden">
+        <div className="border-t border-line px-4 py-3 lg:hidden">
           <SearchBox autoFocus onDone={() => setSearchOpen(false)} />
         </div>
       )}

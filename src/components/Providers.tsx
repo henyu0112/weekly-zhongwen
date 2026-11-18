@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { rememberPage } from '@/lib/nav';
 import { useSettings } from '@/lib/settings';
-import { wireProfile } from '@/lib/profile';
 import { emit } from '@/lib/events';
 
 /** Applies settings to <html> and wires platform-wide event listeners. */
@@ -16,7 +15,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => rememberPage(pathname), [pathname]);
 
   useEffect(() => {
-    wireProfile();
     emit('daily_visit', { date: new Date().toISOString().slice(0, 10) });
   }, []);
 

@@ -21,7 +21,7 @@ npm run build      # static site -> /out
 ## Project layout
 
 ```
-src/app          pages (home, games, games/[slug], settings, about, shop/quests/profile placeholders)
+src/app          pages (home, games, games/[slug], settings, about, profile, shop, quests placeholder)
 src/components   header, search, language switch, cards, settings UI, game player
 src/lib          settings, profile store, events, search, i18n, game result types
 src/messages     en.ts / zh.ts: all UI text
@@ -32,9 +32,10 @@ src/data         vocab.ts (Word Pop) and words.ts (tagged words for Hanzi Slash:
 
 ## Add a weekly game
 
-1. Create `src/games/<slug>/<Name>.tsx`. It receives `GameProps` (language, settings, `onStart`, `onAnswer`, `onComplete`).
+1. Create `src/games/<slug>/<Name>.tsx`. It receives `GameProps` (language, settings, `player.equipped`, `onStart`, `onAnswer`, `onComplete`).
 2. Add an entry to `GAMES` in `src/games/catalog.ts` (set `releaseDate`, `playable: true`).
 3. Register it in `src/games/loaders.ts`.
+4. To earn XP and coins, set `rewards: true` in the catalog entry and report `correctIds`, `perfectRounds`, `stars`, `practice` and `difficulty` in the result.
 
 Games with a future `releaseDate` stay hidden until that date (the weekly workflow rebuild is not required for this; it is checked in the browser).
 
@@ -45,10 +46,18 @@ Games with a future `releaseDate` stay hidden until that date (the weekly workfl
 - **Word pictures (Word Pop):** `public/art/words/<word id>.svg`, from Twemoji (CC-BY 4.0, credited on the About page).
 - **Colours:** theme tokens at the top of `src/app/globals.css` (blue theme, light and dark).
 
+## XP, coins, profile and shop
+
+- **Tuning numbers:** all in `src/lib/economy.ts` (XP per action, coins, level curve). `computeRewards()` is a pure function, so it can later run on a server.
+- **Recording a game:** `src/lib/rewards.ts` updates stats, mistake book, learned words, XP, level, coins and the reward history. It is called by `GamePlayer`, never by games.
+- **Shop catalogue:** `src/data/shop.ts`. Items are cosmetic only. Buying and equipping: `src/lib/shop.ts`.
+- **Hanzi Slash skins:** `src/games/hanzi-slash/skins.ts` (boards and blade trails, also used by shop previews).
+- **Where data lives:** this browser's localStorage (`wz.profile`). Players can download and restore a backup on the Profile page.
+
 ## Built for what comes next
 
 | Future feature | Where it plugs in |
 | --- | --- |
-| XP / level, currency | `src/lib/profile.ts` (fields exist), listen to `game_completed` / `answer` in `src/lib/events.ts`; header slot `PlayerStatus` |
-| Shop, daily quests | Placeholder routes `/shop`, `/quests`; switch on in `src/lib/config.ts` (`FEATURES`) |
-| Accounts | Swap the storage in `src/lib/store.ts` for a hosted backend (e.g. Supabase); XP/coins must be stored server-side to be tamper-proof |
+| Daily quests | Placeholder route `/quests`; listen to `game_completed` / `answer` in `src/lib/events.ts`; switch on in `src/lib/config.ts` (`FEATURES`) |
+| Accounts / cloud saves | Swap the storage in `src/lib/store.ts` for a hosted backend (e.g. Supabase). Upload the local profile on first login. Move `computeRewards()` server-side so XP/coins can't be edited in the browser |
+| More games earning rewards | `rewards: true` in the catalog; add their cosmetic slots to `src/data/shop.ts` |
