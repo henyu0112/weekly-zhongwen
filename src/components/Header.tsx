@@ -3,30 +3,16 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Gamepad2, House, Info, ListChecks, Search, Settings, ShoppingBag, UserRound, X, type LucideIcon } from 'lucide-react';
+import { Search, Settings, X } from 'lucide-react';
 import { useSettingsToggle } from '@/lib/nav';
 import { Logo } from './Logo';
+import { MobileDrawer } from './MobileDrawer';
+import { NAV, isActive } from './navItems';
 import { SearchBox } from './SearchBox';
 import { LanguageSwitch } from './LanguageSwitch';
 import { PlayerStatus } from './PlayerStatus';
 import { useT } from '@/lib/i18n';
 import { FEATURES } from '@/lib/config';
-import type { MessageKey } from '@/messages/en';
-
-export const NAV: { href: string; key: MessageKey; Icon: LucideIcon; show: boolean }[] = [
-  { href: '/', key: 'nav.home', Icon: House, show: true },
-  { href: '/games', key: 'nav.games', Icon: Gamepad2, show: true },
-  { href: '/quests', key: 'nav.quests', Icon: ListChecks, show: FEATURES.quests },
-  { href: '/shop', key: 'nav.shop', Icon: ShoppingBag, show: FEATURES.shop },
-  { href: '/profile', key: 'nav.profile', Icon: UserRound, show: FEATURES.profile },
-  // About lives in the footer and on the Settings page once the nav has shop + profile.
-  { href: '/about', key: 'nav.about', Icon: Info, show: !FEATURES.shop && !FEATURES.profile },
-];
-
-export const isActive = (pathname: string, href: string) => {
-  const p = pathname.replace(/\/$/, '') || '/';
-  return href === '/' ? p === '/' : p === href || p.startsWith(`${href}/`);
-};
 
 /** True once the page is scrolled down. Hysteresis stops flicker when the header shrinks. */
 function useScrolled() {
@@ -97,8 +83,9 @@ function MainNav({ pathname, compact }: { pathname: string; compact: boolean }) 
               active ? 'text-brand' : 'text-muted hover:text-fg'
             }`}
           >
-            <Icon className="nav-icon size-4" aria-hidden strokeWidth={active ? 2.5 : 2} />
-            {t(key)}
+            {/* Tablet: icons only. Laptop and up: words, which leaves room for the search box. */}
+            <Icon className="nav-icon size-4 lg:hidden" aria-hidden strokeWidth={active ? 2.5 : 2} />
+            <span className="sr-only lg:not-sr-only">{t(key)}</span>
           </Link>
         );
       })}
@@ -126,6 +113,7 @@ export function Header() {
           scrolled ? 'h-14' : 'h-[72px]'
         }`}
       >
+        <MobileDrawer />
         <Logo compact={scrolled} />
 
         <MainNav pathname={pathname} compact={scrolled} />
@@ -146,8 +134,10 @@ export function Header() {
           >
             <Search className="size-5" aria-hidden />
           </button>
-          <LanguageSwitch />
-          {/* Phones use the Settings tab in the bottom bar. */}
+          {/* Phones have language and Settings in the side drawer. */}
+          <div className="hidden md:block">
+            <LanguageSwitch />
+          </div>
           <Link
             href="/settings"
             onClick={settingsToggle.onClick}

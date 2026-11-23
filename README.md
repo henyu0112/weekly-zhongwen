@@ -26,7 +26,7 @@ src/components   header, search, language switch, cards, settings UI, game playe
 src/lib          settings, profile store, events, search, i18n, game result types
 src/messages     en.ts / zh.ts: all UI text
 src/games        catalog.ts (game metadata), loaders.ts, one folder per game
-src/data         vocab.ts (Word Pop) and words.ts (tagged words for Hanzi Slash: level, word type, topic, antonyms)
+src/data         words.ts (the one word database: each word once) and activities.ts (which words each game uses)
                  NOTE: words.ts is a DRAFT; levels/word types must be reviewed against the real syllabus.
 ```
 

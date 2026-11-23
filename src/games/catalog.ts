@@ -78,8 +78,8 @@ export const GAMES: GameMeta[] = [
       zh: '和时间赛跑！在时间用完之前，把图片和正确的中文词语配对。',
     },
     howTo: {
-      en: 'Tap the correct answer. Build a streak of right answers for bonus points. You have 45 seconds!',
-      zh: '点击正确的答案。连续答对可获得额外加分。你有 45 秒！',
+      en: 'Tap the correct answer. Build a streak for bonus points; every 10 in a row is a perfect streak. Words you miss go into your mistake book. You have 45 seconds!',
+      zh: '点击正确的答案。连续答对可获得额外加分，每连对 10 题就是一次完美连击。答错的词语会存进错题本。你有 45 秒！',
     },
     pinyin: 'han zi pao pao',
     gradient: 'from-sky-400 to-blue-600',
@@ -89,6 +89,7 @@ export const GAMES: GameMeta[] = [
     tags: ['quiz', 'timed', 'matching'],
     inspiredBy: 'Bubble Pop',
     playable: true,
+    rewards: true,
   },
   {
     slug: 'hanzi-snake',

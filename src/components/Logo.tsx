@@ -20,7 +20,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
         <img src={`${BASE}/brand/logo-mark.png`} alt="" className="size-full object-contain dark:hidden" />
         <img src={`${BASE}/brand/logo-mark-dark.png`} alt="" className="hidden size-full object-contain dark:block" />
       </span>
-      <span aria-hidden className="leading-none">
+      <span aria-hidden className="leading-none md:hidden lg:block">
         <span
           className={`flex font-black tracking-wide text-fg transition-all duration-300 ${
             compact ? 'text-lg' : 'text-lg sm:text-xl'

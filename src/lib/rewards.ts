@@ -46,7 +46,8 @@ export function recordGameResult(r: GameResult, opts: { rewards: boolean }): Rew
       recent: [r, ...p.recent].slice(0, 20),
     };
 
-    if (!opts.rewards) return next;
+    // A game left idle earns nothing (including the daily bonus).
+    if (!opts.rewards || r.correct + r.wrong === 0) return next;
 
     const today = localDay();
     summary = computeRewards(

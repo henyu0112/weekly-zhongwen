@@ -19,26 +19,49 @@ export function createPersistentStore<T extends object>(
   key: string,
   defaults: T,
   clientDefaults?: () => Partial<T>,
+  /** Fields remembered only until the tab or browser is closed. */
+  sessionFields: (keyof T)[] = [],
 ): PersistentStore<T> {
   let current: T | null = null;
+  const sessionKey = `${key}.session`;
+
+  const readSession = (): Partial<T> => {
+    if (!sessionFields.length) return {};
+    try {
+      return JSON.parse(window.sessionStorage.getItem(sessionKey) ?? '{}');
+    } catch {
+      return {};
+    }
+  };
   const listeners = new Set<() => void>();
 
   const load = (): T => {
     if (typeof window === 'undefined') return defaults;
     try {
       const raw = window.localStorage.getItem(key);
-      if (raw) return { ...defaults, ...JSON.parse(raw) };
+      if (raw) {
+        const saved = JSON.parse(raw);
+        for (const f of sessionFields) delete saved[f];
+        return { ...defaults, ...saved, ...readSession() };
+      }
     } catch {
       /* storage blocked or corrupt: fall through to defaults */
     }
-    return { ...defaults, ...(clientDefaults?.() ?? {}) };
+    return { ...defaults, ...(clientDefaults?.() ?? {}), ...readSession() };
   };
 
   const notify = () => listeners.forEach((l) => l());
 
   const persist = (value: T) => {
     try {
-      window.localStorage.setItem(key, JSON.stringify(value));
+      const lasting: Partial<T> = { ...value };
+      const session: Partial<T> = {};
+      for (const f of sessionFields) {
+        session[f] = value[f];
+        delete lasting[f];
+      }
+      window.localStorage.setItem(key, JSON.stringify(lasting));
+      if (sessionFields.length) window.sessionStorage.setItem(sessionKey, JSON.stringify(session));
     } catch {
       /* ignore quota / private mode errors */
     }

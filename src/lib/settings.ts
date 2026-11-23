@@ -14,7 +14,7 @@ export interface Settings {
 }
 
 export const defaultSettings: Settings = {
-  language: 'en',
+  language: 'zh',
   theme: 'system',
   sound: true,
   textSize: 'medium',
@@ -24,9 +24,9 @@ export const defaultSettings: Settings = {
 export const settingsStore = createPersistentStore<Settings>(
   'wz.settings',
   defaultSettings,
-  () => ({
-    language: navigator.language?.toLowerCase().startsWith('zh') ? 'zh' : 'en',
-  }),
+  undefined,
+  // Every new visit starts in Chinese. Switching to English lasts until the tab is closed.
+  ['language'],
 );
 
 export const useSettings = () => useStore(settingsStore);

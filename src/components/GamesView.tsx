@@ -6,7 +6,7 @@ import { GameCard } from './GameCard';
 import { TOPICS, type TopicId } from '@/games/catalog';
 import { loc, useT } from '@/lib/i18n';
 import { searchGames, useReleasedGames } from '@/lib/games';
-import { LEVELS, levelName, levelShort } from '@/lib/levels';
+import { LEVEL_GROUPS, inGroup, type LevelGroup } from '@/lib/levels';
 import { TopicIcon } from './TopicIcon';
 
 function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -28,20 +28,20 @@ export function GamesView() {
   const { t, locale } = useT();
   const all = useReleasedGames();
   const q = useSearchParams().get('q') ?? '';
-  const [standard, setStandard] = useState<number | null>(null);
+  const [group, setGroup] = useState<LevelGroup | null>(null);
   const [topic, setTopic] = useState<TopicId | null>(null);
 
   const games = useMemo(
     () =>
       searchGames(all, q, locale).filter(
         (g) =>
-          (standard === null || (g.standards[0] <= standard && standard <= g.standards[1])) &&
+          (group === null || inGroup(group, g.standards)) &&
           (topic === null || g.topics.includes(topic)),
       ),
-    [all, q, locale, standard, topic],
+    [all, q, locale, group, topic],
   );
 
-  const filtered = standard !== null || topic !== null;
+  const filtered = group !== null || topic !== null;
 
   return (
     <div className="space-y-6">
@@ -53,12 +53,13 @@ export function GamesView() {
       <div className="space-y-3 rounded-3xl border border-line bg-surface p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="mr-1 text-sm font-extrabold">{t('games.filter.standard')}</span>
-          <Chip active={standard === null} onClick={() => setStandard(null)}>
+          <Chip active={group === null} onClick={() => setGroup(null)}>
             {t('games.filter.all')}
           </Chip>
-          {LEVELS.map((n) => (
-            <Chip key={n} active={standard === n} onClick={() => setStandard(standard === n ? null : n)}>
-              <span title={levelName(n, locale)}>{levelShort(n, locale)}</span>
+          {LEVEL_GROUPS.map((g) => (
+            <Chip key={g.id} active={group?.id === g.id} onClick={() => setGroup(group?.id === g.id ? null : g)}>
+              {loc(g.name, locale)}
+              <span className="text-xs font-semibold opacity-75">{loc(g.years, locale)}</span>
             </Chip>
           ))}
         </div>
@@ -86,7 +87,7 @@ export function GamesView() {
             <button
               type="button"
               onClick={() => {
-                setStandard(null);
+                setGroup(null);
                 setTopic(null);
               }}
               className="mt-4 rounded-full bg-brand px-5 py-2.5 font-bold text-brand-fg"

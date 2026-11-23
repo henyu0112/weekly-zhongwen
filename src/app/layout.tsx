@@ -3,7 +3,6 @@ import './globals.css';
 import { Providers } from '@/components/Providers';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { MobileTabBar } from '@/components/MobileTabBar';
 
 export const metadata: Metadata = {
   title: { default: '每周中文 WeeklyZhongwen', template: '%s | 每周中文 WeeklyZhongwen' },
@@ -21,18 +20,17 @@ const preboot = `(function(){try{var s=JSON.parse(localStorage.getItem('wz.setti
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="zh-CN" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: preboot }} />
       </head>
       <body className="flex min-h-screen flex-col">
         <Providers>
           <Header />
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-24 pt-6 md:pb-12 md:pt-10">
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-12 pt-6 md:pt-10">
             {children}
           </main>
           <Footer />
-          <MobileTabBar />
         </Providers>
       </body>
     </html>

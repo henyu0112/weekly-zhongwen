@@ -23,6 +23,8 @@ export interface Word {
   topic?: TopicKey;
   /** 1–6 = Standard 1–6, 7–11 = Form 1–5. */
   level: number;
+  /** Picture file in public/art/words (without .svg), if this word has one. */
+  art?: string;
 }
 
 export const POS_ZH: Record<Pos, string> = {
@@ -30,6 +32,13 @@ export const POS_ZH: Record<Pos, string> = {
   noun: '名词',
   verb: '动词',
   measure: '量词',
+};
+
+export const POS_EN: Record<Pos, string> = {
+  adj: 'Adjective',
+  noun: 'Noun',
+  verb: 'Verb',
+  measure: 'Measure word',
 };
 
 export const POS_HINT_ZH: Record<Pos, string> = {
@@ -53,19 +62,83 @@ export const TOPIC_ZH: Record<TopicKey, string> = {
   feeling: '心情与品格',
 };
 
+export const TOPIC_EN: Record<TopicKey, string> = {
+  food: 'Food',
+  animal: 'Animals',
+  nature: 'Nature',
+  school: 'School',
+  family: 'Family',
+  body: 'Body',
+  transport: 'Transport',
+  place: 'Places',
+  science: 'Science',
+  society: 'Society',
+  feeling: 'Feelings & character',
+};
+
+/** Which words have a picture (hanzi → file name). */
+const PICTURES: Record<string, string> = {
+  人: 'ren',
+  大: 'da',
+  小: 'xiao',
+  山: 'shan',
+  水: 'shui',
+  火: 'huo',
+  日: 'ri',
+  月: 'yue',
+  口: 'kou',
+  手: 'shou',
+  苹果: 'pingguo',
+  猫: 'mao',
+  狗: 'gou',
+  鱼: 'yu',
+  鸟: 'niao',
+  花: 'hua',
+  书: 'shu',
+  学校: 'xuexiao',
+  老师: 'laoshi',
+  朋友: 'pengyou',
+  医生: 'yisheng',
+  汽车: 'qiche',
+  飞机: 'feiji',
+  电话: 'dianhua',
+  面包: 'mianbao',
+  牛奶: 'niunai',
+  图书馆: 'tushuguan',
+  医院: 'yiyuan',
+  彩虹: 'caihong',
+  星星: 'xingxing',
+  雨伞: 'yusan',
+  地球: 'diqiu',
+  火车: 'huoche',
+  电脑: 'diannao',
+  蝴蝶: 'hudie',
+  西瓜: 'xigua',
+  望远镜: 'wangyuanjing',
+  火山: 'huoshan',
+  钥匙: 'yaoshi',
+  宇航员: 'yuhangyuan',
+};
+
 type Row = [hanzi: string, pinyin: string, en: string, pos: Pos, topic?: TopicKey];
 
 const L = (level: number, rows: Row[]): Word[] =>
-  rows.map(([hanzi, pinyin, en, pos, topic]) => ({ id: hanzi, hanzi, pinyin, en, pos, topic, level }));
+  rows.map(([hanzi, pinyin, en, pos, topic]) => ({ id: hanzi, hanzi, pinyin, en, pos, topic, level, art: PICTURES[hanzi] }));
 
 /**
- * DRAFT word list for testing the game. Levels, word types and topics are
+ * THE WORD DATABASE: every word exists here exactly once. Games and the
+ * dictionary refer to words by id (see activities.ts), so fixing a word here
+ * fixes it everywhere.
+ *
+ * DRAFT word list for testing. Levels, word types and topics are
  * approximate and MUST be reviewed by a teacher against the real syllabus
  * (KSSR Standard 1–6, KSSM Form 1–5) before real use.
  */
 export const WORDS: Word[] = [
   // Standard 1
   ...L(1, [
+    ['日', 'rì', 'sun', 'noun', 'nature'],
+    ['月', 'yuè', 'moon', 'noun', 'nature'],
     ['大', 'dà', 'big', 'adj'],
     ['小', 'xiǎo', 'small', 'adj'],
     ['多', 'duō', 'many', 'adj'],
@@ -119,6 +192,8 @@ export const WORDS: Word[] = [
   ]),
   // Standard 3
   ...L(3, [
+    ['朋友', 'péng you', 'friend', 'noun'],
+    ['电话', 'diàn huà', 'telephone', 'noun'],
     ['新', 'xīn', 'new', 'adj'],
     ['旧', 'jiù', 'old (things)', 'adj'],
     ['好', 'hǎo', 'good', 'adj'],
@@ -197,6 +272,7 @@ export const WORDS: Word[] = [
   ]),
   // Standard 6
   ...L(6, [
+    ['钥匙', 'yào shi', 'key', 'noun'],
     ['危险', 'wēi xiǎn', 'dangerous', 'adj'],
     ['安全', 'ān quán', 'safe', 'adj'],
     ['复杂', 'fù zá', 'complicated', 'adj'],
@@ -340,6 +416,13 @@ export const WORDS: Word[] = [
 ];
 
 export const WORD_BY_ID: Record<string, Word> = Object.fromEntries(WORDS.map((w) => [w.id, w]));
+
+// Guard: a word added twice stops the build instead of silently overwriting the first.
+if (Object.keys(WORD_BY_ID).length !== WORDS.length) {
+  const seen = new Set<string>();
+  const twice = WORDS.filter((w) => seen.size === seen.add(w.id).size).map((w) => w.id);
+  throw new Error(`Duplicate words in src/data/words.ts: ${twice.join(', ')}`);
+}
 
 /** Antonym pairs (by hanzi). A pair is only used when both words are in the chosen level range. */
 const ANTONYM_SOURCE: [string, string][] = [

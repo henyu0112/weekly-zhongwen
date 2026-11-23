@@ -1,4 +1,5 @@
-import { WORDS, type Word } from '@/data/words';
+import { wordsFor } from '@/data/activities';
+import type { Word } from '@/data/words';
 import { makeRound, missReason, wrongReason, type Round, type RoundItem } from './rules';
 
 export type DifficultyId = 'easy' | 'normal' | 'hard';
@@ -181,8 +182,8 @@ export class Session {
     this.lives = this.params.lives;
     this.listener = onChange;
 
-    const inRange = WORDS.filter((w) => w.level >= config.levelMin && w.level <= config.levelMax);
-    const extra = WORDS.filter((w) => this.focus.has(w.id) && !inRange.includes(w));
+    const inRange = wordsFor('hanzi-slash').filter((w) => w.level >= config.levelMin && w.level <= config.levelMax);
+    const extra = wordsFor('hanzi-slash').filter((w) => this.focus.has(w.id) && !inRange.includes(w));
     this.pool = [...inRange, ...extra];
   }
 

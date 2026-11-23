@@ -5,7 +5,7 @@ import type { Localized } from '@/lib/types';
  * never make a game easier. Add new items here; no other code changes needed
  * unless a game gets a brand-new slot.
  */
-export type SlotId = 'slash.board' | 'slash.blade' | 'frame';
+export type SlotId = 'slash.board' | 'slash.blade' | 'pop.scene' | 'pop.bubble' | 'frame';
 
 export interface ShopSlot {
   id: SlotId;
@@ -15,6 +15,8 @@ export interface ShopSlot {
 export const SHOP_SLOTS: ShopSlot[] = [
   { id: 'slash.board', name: { en: 'Hanzi Slash · Cutting board', zh: '汉字斩 · 砧板' } },
   { id: 'slash.blade', name: { en: 'Hanzi Slash · Blade trail', zh: '汉字斩 · 刀光' } },
+  { id: 'pop.scene', name: { en: 'Word Pop · Background', zh: '汉字泡泡 · 背景' } },
+  { id: 'pop.bubble', name: { en: 'Word Pop · Bubbles', zh: '汉字泡泡 · 泡泡' } },
   { id: 'frame', name: { en: 'Avatar frame', zh: '头像框' } },
 ];
 
@@ -43,6 +45,20 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'blade.ice', slot: 'slash.blade', name: { en: 'Ice', zh: '冰霜' }, price: 100, level: 2 },
   { id: 'blade.rainbow', slot: 'slash.blade', name: { en: 'Rainbow', zh: '彩虹' }, price: 180, level: 4 },
   { id: 'blade.ink', slot: 'slash.blade', name: { en: 'Ink brush', zh: '毛笔墨迹' }, price: 220, level: 6 },
+
+  // Word Pop backgrounds
+  { id: 'scene.sky', slot: 'pop.scene', name: { en: 'Blue sky', zh: '蓝天' }, price: 0, level: 1, default: true },
+  { id: 'scene.sunset', slot: 'pop.scene', name: { en: 'Sunset', zh: '晚霞' }, price: 120, level: 1 },
+  { id: 'scene.ocean', slot: 'pop.scene', name: { en: 'Deep ocean', zh: '深海' }, price: 150, level: 2 },
+  { id: 'scene.forest', slot: 'pop.scene', name: { en: 'Bamboo forest', zh: '竹林' }, price: 200, level: 3 },
+  { id: 'scene.night', slot: 'pop.scene', name: { en: 'Starry night', zh: '星空' }, price: 250, level: 5 },
+
+  // Word Pop bubbles
+  { id: 'bubble.classic', slot: 'pop.bubble', name: { en: 'Classic', zh: '经典' }, price: 0, level: 1, default: true },
+  { id: 'bubble.candy', slot: 'pop.bubble', name: { en: 'Candy', zh: '糖果' }, price: 100, level: 1 },
+  { id: 'bubble.mint', slot: 'pop.bubble', name: { en: 'Mint', zh: '薄荷' }, price: 100, level: 2 },
+  { id: 'bubble.gold', slot: 'pop.bubble', name: { en: 'Golden', zh: '金色' }, price: 180, level: 4 },
+  { id: 'bubble.galaxy', slot: 'pop.bubble', name: { en: 'Galaxy', zh: '银河' }, price: 220, level: 6 },
 
   // Avatar frames (level rewards are free to claim)
   { id: 'frame.none', slot: 'frame', name: { en: 'No frame', zh: '无边框' }, price: 0, level: 1, default: true },
