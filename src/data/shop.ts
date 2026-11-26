@@ -10,15 +10,17 @@ export type SlotId = 'slash.board' | 'slash.blade' | 'pop.scene' | 'pop.bubble' 
 export interface ShopSlot {
   id: SlotId;
   name: Localized;
+  /** Game the slot belongs to (catalog slug): its shop tab. Leave out for items used site-wide. */
+  game?: string;
 }
 
 export const SHOP_SLOTS: ShopSlot[] = [
-  { id: 'slash.board', name: { en: 'Hanzi Slash · Cutting board', zh: '汉字斩 · 砧板' } },
-  { id: 'slash.blade', name: { en: 'Hanzi Slash · Blade trail', zh: '汉字斩 · 刀光' } },
-  { id: 'pop.scene', name: { en: 'Word Pop · Background', zh: '汉字泡泡 · 背景' } },
-  { id: 'pop.bubble', name: { en: 'Word Pop · Bubbles', zh: '汉字泡泡 · 泡泡' } },
-  { id: 'snake.skin', name: { en: 'Hanzi Snake · Snake skin', zh: '汉字贪吃蛇 · 蛇皮' } },
-  { id: 'snake.board', name: { en: 'Hanzi Snake · Board', zh: '汉字贪吃蛇 · 棋盘' } },
+  { id: 'slash.board', game: 'hanzi-slash', name: { en: 'Hanzi Slash · Cutting board', zh: '汉字斩 · 砧板' } },
+  { id: 'slash.blade', game: 'hanzi-slash', name: { en: 'Hanzi Slash · Blade trail', zh: '汉字斩 · 刀光' } },
+  { id: 'pop.scene', game: 'word-pop', name: { en: 'Word Pop · Background', zh: '汉字泡泡 · 背景' } },
+  { id: 'pop.bubble', game: 'word-pop', name: { en: 'Word Pop · Bubbles', zh: '汉字泡泡 · 泡泡' } },
+  { id: 'snake.skin', game: 'hanzi-snake', name: { en: 'Hanzi Snake · Snake skin', zh: '汉字贪吃蛇 · 蛇皮' } },
+  { id: 'snake.board', game: 'hanzi-snake', name: { en: 'Hanzi Snake · Board', zh: '汉字贪吃蛇 · 棋盘' } },
   { id: 'frame', name: { en: 'Avatar frame', zh: '头像框' } },
 ];
 

@@ -147,6 +147,9 @@ export const en = {
   'shop.locked': 'Reach level {n}',
   'shop.needCoins': 'Need {n} more',
   'shop.free': 'Free',
+  'shop.general': 'Profile',
+  'shop.tabs': 'Choose a game',
+  'shop.canBuy': '{n} item(s) you can get now',
   'shop.done': 'Got it! Now in use.',
   'shop.howToEarn': 'Earn coins by playing Hanzi Slash, Word Pop and Hanzi Snake: correct answers, perfect rounds, stars and level-ups.',
 

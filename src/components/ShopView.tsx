@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Coins, Lock, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, Coins, Lock, Sparkles, UserRound } from 'lucide-react';
 import { Avatar } from './Avatar';
+import { GameArt } from './GameArt';
+import { getGame } from '@/games/catalog';
 import { SkinPreview } from '@/games/hanzi-slash/SkinPreview';
 import { PopSkinPreview } from '@/games/word-pop/skins';
 import { SnakePreview } from '@/games/hanzi-snake/skins';
@@ -12,12 +14,59 @@ import { loc, useT } from '@/lib/i18n';
 import { useProfile } from '@/lib/profile';
 import { buyItem, equipItem, equippedAll, isOwned } from '@/lib/shop';
 
+const GENERAL = 'general';
+const TAB_KEY = 'wz.shopTab';
+
+/** One tab per game that has items, then site-wide items (avatar frames). */
+const TABS = [...new Set(SHOP_SLOTS.map((s) => s.game ?? GENERAL))].sort((a, b) =>
+  a === GENERAL ? 1 : b === GENERAL ? -1 : 0,
+);
+
+const slotsIn = (tab: string) => SHOP_SLOTS.filter((s) => (s.game ?? GENERAL) === tab);
+
 export function ShopView() {
   const { t, locale } = useT();
   const p = useProfile();
   const level = levelFromXp(p.xp);
   const equipped = equippedAll(p);
   const [pending, setPending] = useState<string | null>(null);
+  const [tab, setTab] = useState(TABS[0]);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  // On phones the tab row scrolls sideways: keep the chosen tab in view.
+  useEffect(() => {
+    const row = tabsRef.current;
+    const el = row?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (row && el) row.scrollTo({ left: el.offsetLeft - row.clientWidth / 2 + el.offsetWidth / 2, behavior: 'smooth' });
+  }, [tab]);
+
+  // Come back to the same tab after visiting another page.
+  useEffect(() => {
+    try {
+      const saved = window.sessionStorage.getItem(TAB_KEY);
+      if (saved && TABS.includes(saved)) setTab(saved);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+  const chooseTab = (id: string) => {
+    setTab(id);
+    setPending(null);
+    try {
+      window.sessionStorage.setItem(TAB_KEY, id);
+    } catch {
+      /* storage unavailable */
+    }
+  };
+  const tabLabel = (id: string) => {
+    const game = id === GENERAL ? undefined : getGame(id);
+    return game ? loc(game.title, locale) : t('shop.general');
+  };
+  /** Items in a tab you could buy right now (unlocked, affordable, not owned). */
+  const buyable = (id: string) =>
+    SHOP_ITEMS.filter(
+      (i) => slotsIn(id).some((s) => s.id === i.slot) && !isOwned(p, i) && level >= i.level && p.coins >= i.price,
+    ).length;
   const [notice, setNotice] = useState<string | null>(null);
 
   const confirmBuy = (item: ShopItem) => {
@@ -108,10 +157,56 @@ export function ShopView() {
         </p>
       )}
 
-      {SHOP_SLOTS.map((slot) => (
+      <div
+        ref={tabsRef}
+        role="tablist"
+        aria-label={t('shop.tabs')}
+        className="relative -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
+      >
+        {TABS.map((id) => {
+          const active = tab === id;
+          const game = id === GENERAL ? undefined : getGame(id);
+          const count = buyable(id);
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              id={`tab-${id}`}
+              aria-selected={active}
+              aria-controls="shop-panel"
+              onClick={() => chooseTab(id)}
+              className={`relative inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full border py-1.5 pl-1.5 pr-4 text-sm font-extrabold transition-colors ${
+                active ? 'border-brand bg-brand text-brand-fg' : 'border-line bg-surface hover:bg-soft'
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`grid size-9 place-items-center rounded-full ${game ? `bg-gradient-to-br ${game.gradient}` : 'bg-soft text-brand'}`}
+              >
+                {game ? <GameArt slug={game.slug} className="size-7" /> : <UserRound className="size-5" />}
+              </span>
+              {tabLabel(id)}
+              {count > 0 && (
+                <span
+                  className="grid min-w-5 place-items-center rounded-full bg-amber-400 px-1.5 text-xs font-black text-slate-900"
+                  aria-label={t('shop.canBuy', { n: count })}
+                  title={t('shop.canBuy', { n: count })}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div id="shop-panel" role="tabpanel" aria-labelledby={`tab-${tab}`} className="space-y-6">
+      {slotsIn(tab).map((slot) => (
         <section key={slot.id} aria-labelledby={`slot-${slot.id}`}>
           <h2 id={`slot-${slot.id}`} className="mb-3 text-xl font-extrabold">
-            {loc(slot.name, locale)}
+            {/* The tab already names the game, so show just the item type. */}
+            {loc(slot.name, locale).split(' · ').pop()}
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {SHOP_ITEMS.filter((i) => i.slot === slot.id).map((item) => (
@@ -149,6 +244,7 @@ export function ShopView() {
           </div>
         </section>
       ))}
+      </div>
     </div>
   );
 }

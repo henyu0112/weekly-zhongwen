@@ -10,10 +10,15 @@ import { WORDS, type Word } from '@/data/words';
 export type DifficultyId = 'easy' | 'normal' | 'hard';
 export type GameMode = 'normal' | 'practice' | 'mistakes';
 export type Dir = 'up' | 'down' | 'left' | 'right';
+/** 组词: build words. 成语: build four-character idioms. */
+export type Content = 'words' | 'idioms';
 
 export const COLS = 12;
 export const ROWS = 12;
-export const WORDS_PER_STAGE = 10;
+/** Targets per stage. Idioms add 4 tiles each, so fewer keep the board playable. */
+export const STAGE_SIZE: Record<Content, number> = { words: 10, idioms: 6 };
+
+const ACTIVITY: Record<Content, string> = { words: 'hanzi-snake', idioms: 'hanzi-snake-idioms' };
 const START_LENGTH = 3;
 /** Wrong characters shrink the snake, but never below this. */
 const MIN_LENGTH = 3;
@@ -89,6 +94,7 @@ export const DIFFICULTIES: Record<DifficultyId, DifficultyParams> = {
 };
 
 export interface SnakeConfig {
+  content: Content;
   difficulty: DifficultyId;
   mode: GameMode;
   levelMin: number;
@@ -194,6 +200,7 @@ export class SnakeGame {
   readonly params: DifficultyParams;
   readonly practice: boolean;
   readonly maxLives: number | null;
+  readonly stageSize: number;
 
   /** Snake cells, head first. */
   snake: Cell[] = [];
@@ -243,6 +250,7 @@ export class SnakeGame {
     this.params = DIFFICULTIES[config.difficulty];
     this.practice = config.mode === 'practice';
     this.maxLives = this.practice ? null : this.params.lives;
+    this.stageSize = STAGE_SIZE[config.content];
     this.lives = this.params.lives;
     this.focus = new Set(config.mode === 'mistakes' ? config.focusIds : []);
     this.queueWords = this.pickWords();
@@ -254,7 +262,9 @@ export class SnakeGame {
 
   // ----- words -----
   private pickWords(): Word[] {
-    const all = wordsFor('hanzi-snake');
+    const all = wordsFor(ACTIVITY[this.config.content]);
+    // Idioms are always four characters, so the length limit only applies to words.
+    const maxLength = this.config.content === 'idioms' ? Infinity : this.params.maxLength;
     let pool: Word[];
     if (this.focus.size) {
       pool = all.filter((w) => this.focus.has(w.id));
@@ -263,7 +273,7 @@ export class SnakeGame {
         (w) =>
           w.level >= this.config.levelMin &&
           w.level <= this.config.levelMax &&
-          w.hanzi.length <= this.params.maxLength,
+          [...w.hanzi].length <= maxLength,
       );
       // Too few words in this group at this length: allow longer ones from the same group.
       if (pool.length < 4) pool = all.filter((w) => w.level >= this.config.levelMin && w.level <= this.config.levelMax);
@@ -271,9 +281,9 @@ export class SnakeGame {
     if (pool.length === 0) pool = all;
 
     const picked: Word[] = [];
-    while (picked.length < WORDS_PER_STAGE) {
+    while (picked.length < this.stageSize) {
       for (const w of shuffle(pool)) {
-        if (picked.length >= WORDS_PER_STAGE) break;
+        if (picked.length >= this.stageSize) break;
         // Avoid the same word twice in a row, unless it is the only word there is.
         if (pool.length === 1 || picked[picked.length - 1]?.id !== w.id) picked.push(w);
       }
@@ -383,7 +393,7 @@ export class SnakeGame {
       }
       if (this.phase === 'card') {
         this.wordsDone += 1;
-        if (this.wordsDone >= WORDS_PER_STAGE) {
+        if (this.wordsDone >= this.stageSize) {
           this.finished = true;
           this.end();
           return;
@@ -426,7 +436,14 @@ export class SnakeGame {
     this.prevSnake = this.snake.map((c) => ({ ...c }));
     this.grew = false;
     const hit = this.items.find((it) => it.x === x && it.y === y);
-    if (hit && hit.index === this.progress) {
+    const wanted = this.word ? [...this.word.hanzi][this.progress] : undefined;
+    if (hit && hit.index >= 0 && hit.ch === wanted) {
+      // Idioms can repeat a character (一心一意): eating either copy is fine, and
+      // the other copy takes over the later position so the hint still points right.
+      if (hit.index !== this.progress) {
+        const twin = this.items.find((it) => it !== hit && it.index === this.progress);
+        if (twin) twin.index = hit.index;
+      }
       this.items = this.items.filter((it) => it !== hit);
       this.grew = true;
       this.snake.unshift({ x, y });

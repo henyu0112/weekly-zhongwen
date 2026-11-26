@@ -27,7 +27,11 @@ import {
 import { GameArt } from '@/components/GameArt';
 import { RewardPanel } from '@/components/RewardPanel';
 import type { RewardSummary } from '@/lib/economy';
+import { ACTIVITY_WORDS } from '@/data/activities';
 import { POS_ZH, TOPIC_ZH, WORD_BY_ID, type Word } from '@/data/words';
+
+/** Only Hanzi Slash words belong in its mistake practice and mistake book. */
+const SLASH_WORDS = new Set(ACTIVITY_WORDS['hanzi-slash']);
 import { profileStore, useProfile } from '@/lib/profile';
 import { LEVEL_GROUPS, type LevelGroupId } from '@/lib/levels';
 import { createPersistentStore, useStore } from '@/lib/store';
@@ -135,7 +139,7 @@ export default function HanziSlash({ locale, settings, player, onStart, onAnswer
   const [reward, setReward] = useState<RewardSummary | null>(null);
   const reported = useRef(false);
 
-  const mistakeIds = useMemo(() => Object.keys(profile.mistakes).filter((id) => WORD_BY_ID[id]), [profile.mistakes]);
+  const mistakeIds = useMemo(() => Object.keys(profile.mistakes).filter((id) => SLASH_WORDS.has(id)), [profile.mistakes]);
 
   const start = useCallback(
     (mode: GameMode) => {
@@ -692,7 +696,7 @@ function Book({ locale, onBack, onPractice }: { locale: Locale; onBack: () => vo
     () =>
       Object.entries(profile.mistakes)
         .map(([id, m]) => ({ word: WORD_BY_ID[id], ...m }))
-        .filter((e) => e.word)
+        .filter((e) => e.word && SLASH_WORDS.has(e.word.id))
         .sort((a, b) => b.count - a.count),
     [profile.mistakes],
   );

@@ -145,6 +145,9 @@ export const zh: Record<MessageKey, string> = {
   'shop.locked': '{n} 级解锁',
   'shop.needCoins': '还差 {n}',
   'shop.free': '免费',
+  'shop.general': '个人',
+  'shop.tabs': '选择游戏',
+  'shop.canBuy': '现在可以获得 {n} 件',
   'shop.done': '获得了！已开始使用。',
   'shop.howToEarn': '玩汉字斩、汉字泡泡和汉字贪吃蛇可以赚金币：答对、完美回合、星星和升级都有奖励。',
 

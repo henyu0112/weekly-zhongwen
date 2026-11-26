@@ -30,7 +30,7 @@ import { useProfile } from '@/lib/profile';
 import { speak } from '@/lib/speech';
 import { createPersistentStore, useStore } from '@/lib/store';
 import type { GameProps } from '@/lib/types';
-import { DIFFICULTIES, WORDS_PER_STAGE, SnakeGame, type DifficultyId, type Dir, type GameMode, type SnakeConfig } from './game';
+import { DIFFICULTIES, STAGE_SIZE, SnakeGame, type Content, type DifficultyId, type Dir, type GameMode, type SnakeConfig } from './game';
 import { SnakeView } from './view';
 
 // ---------- preferences ----------
@@ -44,16 +44,42 @@ const RANGES: Record<RangeId, { label: string; sub?: string; levels: [number, nu
 };
 
 interface Prefs {
+  content: Content;
   range: RangeId;
   difficulty: DifficultyId;
   /** On-screen arrow pad. null = automatic (shown on touch screens). */
   dpad: boolean | null;
 }
 
-const prefsStore = createPersistentStore<Prefs>('wz.hanzisnake', { range: 'all', difficulty: 'normal', dpad: null });
+const prefsStore = createPersistentStore<Prefs>('wz.hanzisnake', {
+  content: 'words',
+  range: 'all',
+  difficulty: 'normal',
+  dpad: null,
+});
 
 const isTouch = () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
-const SNAKE_WORDS = new Set(ACTIVITY_WORDS['hanzi-snake']);
+const CONTENT_WORDS: Record<Content, Set<string>> = {
+  words: new Set(ACTIVITY_WORDS['hanzi-snake']),
+  idioms: new Set(ACTIVITY_WORDS['hanzi-snake-idioms']),
+};
+
+const CONTENT: Record<Content, { label: string; sub: string; unit: string; title: string; intro: string }> = {
+  words: {
+    label: '组词',
+    sub: '按顺序吃字，拼出词语',
+    unit: '个词',
+    title: '汉字贪吃蛇 · 组词',
+    intro: '看提示，按顺序吃下汉字，拼出词语！',
+  },
+  idioms: {
+    label: '成语',
+    sub: '按顺序吃下四个字，拼出成语',
+    unit: '个成语',
+    title: '汉字贪吃蛇 · 成语',
+    intro: '看意思，按顺序吃下四个字，拼出成语！',
+  },
+};
 
 const SHELL = 'bg-gradient-to-b from-[#0d2b20] to-[#123c2d] text-white';
 
@@ -107,8 +133,8 @@ export default function HanziSnake({ settings, player, onStart, onAnswer, onComp
   const startedAt = useRef(0);
 
   const mistakeIds = useMemo(
-    () => Object.keys(profile.mistakes).filter((id) => SNAKE_WORDS.has(id)),
-    [profile.mistakes],
+    () => Object.keys(profile.mistakes).filter((id) => CONTENT_WORDS[prefs.content].has(id)),
+    [profile.mistakes, prefs.content],
   );
 
   const start = useCallback(
@@ -118,6 +144,7 @@ export default function HanziSnake({ settings, player, onStart, onAnswer, onComp
       startedAt.current = performance.now();
       setReward(null);
       setConfig({
+        content: prefs.content === 'idioms' ? 'idioms' : 'words',
         difficulty: prefs.difficulty,
         mode,
         levelMin: range.levels[0],
@@ -187,11 +214,19 @@ function Menu({ prefs, mistakeCount, onStart }: { prefs: Prefs; mistakeCount: nu
     <div className="mx-auto max-w-xl space-y-5 p-5 sm:p-7">
       <div className="text-center">
         <GameArt slug="hanzi-snake" className="mx-auto size-28" />
-        <h2 className="mt-1 text-4xl font-black">汉字贪吃蛇 · 组词</h2>
+        <h2 className="mt-1 text-4xl font-black">{CONTENT[prefs.content].title}</h2>
         <p className="mt-2 text-sm font-bold text-white/70">
-          看提示，按顺序吃下汉字，拼出词语！吃对一个字，小蛇长一格。吃错字或顺序不对，小蛇会变短。别撞墙，也别咬到自己！
+          {CONTENT[prefs.content].intro}吃对一个字，小蛇长一格。吃错字或顺序不对，小蛇会变短。别撞墙，也别咬到自己！
         </p>
       </div>
+
+      <Section title="玩法">
+        {(Object.keys(CONTENT) as Content[]).map((id) => (
+          <Chip key={id} active={prefs.content === id} onClick={() => prefsStore.set({ content: id })} sub={CONTENT[id].sub}>
+            {CONTENT[id].label}
+          </Chip>
+        ))}
+      </Section>
 
       <Section title="年级范围">
         {(Object.keys(RANGES) as RangeId[]).map((id) => (
@@ -418,7 +453,8 @@ function PlayScreen({
         </div>
         <div className="flex items-center gap-3 text-sm font-black sm:text-base">
           <span>
-            第 {Math.min((game?.wordsDone ?? 0) + 1, WORDS_PER_STAGE)}/{WORDS_PER_STAGE} 个词
+            第 {Math.min((game?.wordsDone ?? 0) + 1, game?.stageSize ?? STAGE_SIZE[config.content])}/
+            {game?.stageSize ?? STAGE_SIZE[config.content]} {CONTENT[config.content].unit}
           </span>
           <span>得分 {game?.score ?? 0}</span>
         </div>
@@ -634,7 +670,7 @@ function OverScreen({
       <div className="grid grid-cols-2 gap-2 text-center sm:grid-cols-4">
         {[
           ['得分', practice ? '—' : game.score],
-          ['完成词语', `${results.length}/${WORDS_PER_STAGE}`],
+          [game.config.content === 'idioms' ? '完成成语' : '完成词语', `${results.length}/${game.stageSize}`],
           ['吃对的字', game.correct],
           ['吃错的字', game.wrong],
         ].map(([label, value]) => (
@@ -660,7 +696,9 @@ function OverScreen({
 
       {(results.length > 0 || unfinished) && (
         <section>
-          <h3 className="mb-2 text-sm font-extrabold text-lime-200">这一局的词语</h3>
+          <h3 className="mb-2 text-sm font-extrabold text-lime-200">
+            {game.config.content === 'idioms' ? '这一局的成语' : '这一局的词语'}
+          </h3>
           <ul className="space-y-1.5">
             {[...results.map((r) => ({ word: r.word, state: r.clean ? 'clean' : 'mistake' })), ...(unfinished ? [{ word: unfinished, state: 'unfinished' }] : [])].map(
               ({ word, state }, i) => (

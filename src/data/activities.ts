@@ -7,9 +7,11 @@ import { WORDS, WORD_BY_ID, type Word } from './words';
  */
 export const ACTIVITY_WORDS: Record<string, string[]> = {
   // Hanzi Slash builds its rules from word type, topic and antonyms, so it can use every word.
-  'hanzi-slash': WORDS.map((w) => w.id),
+  'hanzi-slash': WORDS.filter((w) => w.pos !== 'idiom').map((w) => w.id),
   // Hanzi Snake builds words character by character: words of 2+ characters with a Chinese meaning for the clue.
-  'hanzi-snake': WORDS.filter((w) => [...w.hanzi].length >= 2 && w.zh).map((w) => w.id),
+  'hanzi-snake': WORDS.filter((w) => w.pos !== 'idiom' && [...w.hanzi].length >= 2 && w.zh).map((w) => w.id),
+  // Hanzi Snake 成语 mode: four-character idioms.
+  'hanzi-snake-idioms': WORDS.filter((w) => w.pos === 'idiom' && w.zh).map((w) => w.id),
   // Word Pop needs a picture for each word.
   'word-pop': [
     '人', '大', '小', '山', '水', '火', '日', '月', '口', '手',

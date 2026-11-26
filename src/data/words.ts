@@ -1,6 +1,6 @@
 import { MEANINGS } from './meanings';
 
-export type Pos = 'adj' | 'noun' | 'verb' | 'measure';
+export type Pos = 'adj' | 'noun' | 'verb' | 'measure' | 'idiom';
 
 export type TopicKey =
   | 'food'
@@ -36,6 +36,7 @@ export const POS_ZH: Record<Pos, string> = {
   noun: '名词',
   verb: '动词',
   measure: '量词',
+  idiom: '成语',
 };
 
 export const POS_EN: Record<Pos, string> = {
@@ -43,6 +44,7 @@ export const POS_EN: Record<Pos, string> = {
   noun: 'Noun',
   verb: 'Verb',
   measure: 'Measure word',
+  idiom: 'Idiom',
 };
 
 export const POS_HINT_ZH: Record<Pos, string> = {
@@ -50,6 +52,7 @@ export const POS_HINT_ZH: Record<Pos, string> = {
   noun: '名词：人、事物或地方的名称',
   verb: '动词：表示动作的词',
   measure: '量词：用来计算人或事物的单位',
+  idiom: '成语：意思固定的四字词语，常有典故',
 };
 
 export const TOPIC_ZH: Record<TopicKey, string> = {
@@ -416,6 +419,79 @@ export const WORDS: Word[] = [
     ['衰退', 'shuāi tuì', 'to decline', 'verb'],
     ['幢', 'zhuàng', 'measure word for buildings', 'measure'],
     ['部', 'bù', 'measure word for films/books', 'measure'],
+  ]),
+  // 成语 Idioms (Hanzi Snake 成语 mode; Hanzi Slash leaves them out)
+  ...L(3, [
+    ['一心一意', 'yī xīn yī yì', 'wholeheartedly', 'idiom'],
+    ['三心二意', 'sān xīn èr yì', 'half-hearted', 'idiom'],
+    ['自言自语', 'zì yán zì yǔ', 'to talk to oneself', 'idiom'],
+    ['五颜六色', 'wǔ yán liù sè', 'colourful', 'idiom'],
+    ['七上八下', 'qī shàng bā xià', 'nervous and uneasy', 'idiom'],
+    ['一模一样', 'yī mú yī yàng', 'exactly alike', 'idiom'],
+  ]),
+  ...L(4, [
+    ['千方百计', 'qiān fāng bǎi jì', 'by every possible means', 'idiom'],
+    ['半途而废', 'bàn tú ér fèi', 'to give up halfway', 'idiom'],
+    ['井底之蛙', 'jǐng dǐ zhī wā', 'a frog in a well (narrow view)', 'idiom'],
+    ['守株待兔', 'shǒu zhū dài tù', 'to wait for luck instead of working', 'idiom'],
+    ['亡羊补牢', 'wáng yáng bǔ láo', 'better late than never', 'idiom'],
+    ['画蛇添足', 'huà shé tiān zú', 'to ruin something by overdoing it', 'idiom'],
+    ['对牛弹琴', 'duì niú tán qín', 'to talk to someone who cannot understand', 'idiom'],
+  ]),
+  ...L(5, [
+    ['自相矛盾', 'zì xiāng máo dùn', 'to contradict oneself', 'idiom'],
+    ['狐假虎威', 'hú jiǎ hǔ wēi', 'to bully using someone else\'s power', 'idiom'],
+    ['拔苗助长', 'bá miáo zhù zhǎng', 'to spoil things by being too hasty', 'idiom'],
+    ['刻舟求剑', 'kè zhōu qiú jiàn', 'to be rigid and not adapt', 'idiom'],
+    ['杯弓蛇影', 'bēi gōng shé yǐng', 'to be scared by imaginary things', 'idiom'],
+    ['胸有成竹', 'xiōng yǒu chéng zhú', 'to have a well-thought-out plan', 'idiom'],
+    ['一举两得', 'yī jǔ liǎng dé', 'to kill two birds with one stone', 'idiom'],
+    ['争先恐后', 'zhēng xiān kǒng hòu', 'to rush to be first', 'idiom'],
+  ]),
+  ...L(6, [
+    ['专心致志', 'zhuān xīn zhì zhì', 'fully concentrated', 'idiom'],
+    ['全神贯注', 'quán shén guàn zhù', 'with rapt attention', 'idiom'],
+    ['津津有味', 'jīn jīn yǒu wèi', 'with great relish', 'idiom'],
+    ['废寝忘食', 'fèi qǐn wàng shí', 'to forget to eat and sleep', 'idiom'],
+    ['持之以恒', 'chí zhī yǐ héng', 'to persevere', 'idiom'],
+    ['坚持不懈', 'jiān chí bù xiè', 'unremitting', 'idiom'],
+  ]),
+  ...L(7, [
+    ['卧薪尝胆', 'wò xīn cháng dǎn', 'to endure hardship to reach a goal', 'idiom'],
+    ['鹤立鸡群', 'hè lì jī qún', 'to stand out from the crowd', 'idiom'],
+    ['名列前茅', 'míng liè qián máo', 'among the very best', 'idiom'],
+    ['循序渐进', 'xún xù jiàn jìn', 'step by step', 'idiom'],
+    ['精益求精', 'jīng yì qiú jīng', 'to strive for perfection', 'idiom'],
+    ['同心协力', 'tóng xīn xié lì', 'to work together', 'idiom'],
+  ]),
+  ...L(8, [
+    ['一丝不苟', 'yī sī bù gǒu', 'meticulous', 'idiom'],
+    ['锲而不舍', 'qiè ér bù shě', 'to keep at it', 'idiom'],
+    ['脚踏实地', 'jiǎo tà shí dì', 'down-to-earth', 'idiom'],
+    ['实事求是', 'shí shì qiú shì', 'to seek truth from facts', 'idiom'],
+    ['众志成城', 'zhòng zhì chéng chéng', 'unity is strength', 'idiom'],
+    ['风雨同舟', 'fēng yǔ tóng zhōu', 'to stick together through hardship', 'idiom'],
+  ]),
+  ...L(9, [
+    ['入木三分', 'rù mù sān fēn', 'deep and penetrating', 'idiom'],
+    ['破釜沉舟', 'pò fǔ chén zhōu', 'to burn one\'s boats', 'idiom'],
+    ['未雨绸缪', 'wèi yǔ chóu móu', 'to prepare in advance', 'idiom'],
+    ['学以致用', 'xué yǐ zhì yòng', 'to put learning into practice', 'idiom'],
+    ['温故知新', 'wēn gù zhī xīn', 'to review the old to learn the new', 'idiom'],
+  ]),
+  ...L(10, [
+    ['饮水思源', 'yǐn shuǐ sī yuán', 'to remember where good things came from', 'idiom'],
+    ['居安思危', 'jū ān sī wēi', 'to be prepared in times of peace', 'idiom'],
+    ['集思广益', 'jí sī guǎng yì', 'to pool everyone\'s ideas', 'idiom'],
+    ['见贤思齐', 'jiàn xián sī qí', 'to learn from those better than you', 'idiom'],
+    ['防微杜渐', 'fáng wēi dù jiàn', 'to nip problems in the bud', 'idiom'],
+  ]),
+  ...L(11, [
+    ['厚积薄发', 'hòu jī bó fā', 'to build up before showing results', 'idiom'],
+    ['高瞻远瞩', 'gāo zhān yuǎn zhǔ', 'far-sighted', 'idiom'],
+    ['力挽狂澜', 'lì wǎn kuáng lán', 'to turn the tide', 'idiom'],
+    ['自强不息', 'zì qiáng bù xī', 'to strive constantly to improve', 'idiom'],
+    ['海纳百川', 'hǎi nà bǎi chuān', 'open-minded and tolerant', 'idiom'],
   ]),
 ];
 
