@@ -148,7 +148,7 @@ export const en = {
   'shop.needCoins': 'Need {n} more',
   'shop.free': 'Free',
   'shop.done': 'Got it! Now in use.',
-  'shop.howToEarn': 'Earn coins by playing Hanzi Slash and Word Pop: correct answers, perfect rounds, stars and level-ups.',
+  'shop.howToEarn': 'Earn coins by playing Hanzi Slash, Word Pop and Hanzi Snake: correct answers, perfect rounds, stars and level-ups.',
 
   'nav.dictionary': 'Dictionary',
 
@@ -167,6 +167,7 @@ export const en = {
   'dict.listen': 'Listen',
   'dict.close': 'Close',
   'dict.meaning': 'Meaning',
+  'dict.meaningZh': 'Chinese meaning',
   'dict.antonym': 'Antonym',
   'dict.usedIn': 'Practise in',
   'dict.learned': 'Learned',

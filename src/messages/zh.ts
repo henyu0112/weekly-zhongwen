@@ -146,7 +146,7 @@ export const zh: Record<MessageKey, string> = {
   'shop.needCoins': '还差 {n}',
   'shop.free': '免费',
   'shop.done': '获得了！已开始使用。',
-  'shop.howToEarn': '玩汉字斩和汉字泡泡可以赚金币：答对、完美回合、星星和升级都有奖励。',
+  'shop.howToEarn': '玩汉字斩、汉字泡泡和汉字贪吃蛇可以赚金币：答对、完美回合、星星和升级都有奖励。',
 
   'nav.dictionary': '词典',
 
@@ -164,7 +164,8 @@ export const zh: Record<MessageKey, string> = {
   'dict.clear': '清除',
   'dict.listen': '听发音',
   'dict.close': '关闭',
-  'dict.meaning': '意思',
+  'dict.meaning': '英文意思',
+  'dict.meaningZh': '释义',
   'dict.antonym': '反义词',
   'dict.usedIn': '去练习',
   'dict.learned': '已学会',

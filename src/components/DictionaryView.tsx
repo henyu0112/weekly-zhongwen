@@ -20,6 +20,7 @@ import { getGame } from '@/games/catalog';
 import { loc, useT } from '@/lib/i18n';
 import { LEVEL_GROUPS, inGroup, levelGroup, levelName, type LevelGroupId } from '@/lib/levels';
 import { useProfile } from '@/lib/profile';
+import { speak } from '@/lib/speech';
 import type { Locale } from '@/lib/settings';
 import { GameArt } from './GameArt';
 import { WordArt } from './WordArt';
@@ -40,15 +41,6 @@ for (const [a, b] of ANTONYMS) {
 
 const posLabel = (p: Pos, locale: Locale) => (locale === 'zh' ? POS_ZH[p] : POS_EN[p]);
 const topicLabel = (k: TopicKey, locale: Locale) => (locale === 'zh' ? TOPIC_ZH[k] : TOPIC_EN[k]);
-
-function speak(text: string) {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN';
-  u.rate = 0.8;
-  window.speechSynthesis.speak(u);
-}
 
 function Filter<T extends string>({
   label,
@@ -111,6 +103,7 @@ function WordDetail({ word, onOpen, onClose }: { word: Word; onOpen: (id: string
   }, [onClose]);
 
   const rows = [
+    ...(word.zh ? [[t('dict.meaningZh'), word.zh]] : []),
     [t('dict.meaning'), word.en],
     [t('dict.type'), posLabel(word.pos, locale)],
     [t('dict.level'), levelName(word.level, locale)],

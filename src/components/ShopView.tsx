@@ -5,6 +5,7 @@ import { Check, Coins, Lock, Sparkles } from 'lucide-react';
 import { Avatar } from './Avatar';
 import { SkinPreview } from '@/games/hanzi-slash/SkinPreview';
 import { PopSkinPreview } from '@/games/word-pop/skins';
+import { SnakePreview } from '@/games/hanzi-snake/skins';
 import { SHOP_ITEMS, SHOP_SLOTS, type ShopItem } from '@/data/shop';
 import { levelFromXp } from '@/lib/economy';
 import { loc, useT } from '@/lib/i18n';
@@ -120,6 +121,8 @@ export function ShopView() {
                     <div className="grid h-full place-items-center">
                       <Avatar char={p.avatar} frame={item.id} size="md" />
                     </div>
+                  ) : item.slot.startsWith('snake.') ? (
+                    <SnakePreview itemId={item.id} />
                   ) : item.slot.startsWith('pop.') ? (
                     <PopSkinPreview itemId={item.id} />
                   ) : (

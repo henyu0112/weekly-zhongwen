@@ -1,3 +1,5 @@
+import { MEANINGS } from './meanings';
+
 export type Pos = 'adj' | 'noun' | 'verb' | 'measure';
 
 export type TopicKey =
@@ -25,6 +27,8 @@ export interface Word {
   level: number;
   /** Picture file in public/art/words (without .svg), if this word has one. */
   art?: string;
+  /** Simple Chinese meaning (释义) from meanings.ts. Never contains the word's own characters. */
+  zh?: string;
 }
 
 export const POS_ZH: Record<Pos, string> = {
@@ -123,7 +127,7 @@ const PICTURES: Record<string, string> = {
 type Row = [hanzi: string, pinyin: string, en: string, pos: Pos, topic?: TopicKey];
 
 const L = (level: number, rows: Row[]): Word[] =>
-  rows.map(([hanzi, pinyin, en, pos, topic]) => ({ id: hanzi, hanzi, pinyin, en, pos, topic, level, art: PICTURES[hanzi] }));
+  rows.map(([hanzi, pinyin, en, pos, topic]) => ({ id: hanzi, hanzi, pinyin, en, pos, topic, level, art: PICTURES[hanzi], zh: MEANINGS[hanzi] }));
 
 /**
  * THE WORD DATABASE: every word exists here exactly once. Games and the
@@ -423,6 +427,10 @@ if (Object.keys(WORD_BY_ID).length !== WORDS.length) {
   const twice = WORDS.filter((w) => seen.size === seen.add(w.id).size).map((w) => w.id);
   throw new Error(`Duplicate words in src/data/words.ts: ${twice.join(', ')}`);
 }
+
+// Guard: a Chinese meaning that contains its own word would give the answer away in Hanzi Snake.
+const leaks = WORDS.filter((w) => w.zh && [...w.hanzi].some((ch) => w.zh!.includes(ch))).map((w) => w.id);
+if (leaks.length) throw new Error(`These meanings in src/data/meanings.ts contain their own word: ${leaks.join(', ')}`);
 
 /** Antonym pairs (by hanzi). A pair is only used when both words are in the chosen level range. */
 const ANTONYM_SOURCE: [string, string][] = [

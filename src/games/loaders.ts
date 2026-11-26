@@ -8,4 +8,5 @@ import type { GameProps } from '@/lib/types';
 export const GAME_LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
   'hanzi-slash': () => import('./hanzi-slash/HanziSlash'),
   'word-pop': () => import('./word-pop/WordPop'),
+  'hanzi-snake': () => import('./hanzi-snake/HanziSnake'),
 };

@@ -5,7 +5,7 @@ import type { Localized } from '@/lib/types';
  * never make a game easier. Add new items here; no other code changes needed
  * unless a game gets a brand-new slot.
  */
-export type SlotId = 'slash.board' | 'slash.blade' | 'pop.scene' | 'pop.bubble' | 'frame';
+export type SlotId = 'slash.board' | 'slash.blade' | 'pop.scene' | 'pop.bubble' | 'snake.skin' | 'snake.board' | 'frame';
 
 export interface ShopSlot {
   id: SlotId;
@@ -17,6 +17,8 @@ export const SHOP_SLOTS: ShopSlot[] = [
   { id: 'slash.blade', name: { en: 'Hanzi Slash · Blade trail', zh: '汉字斩 · 刀光' } },
   { id: 'pop.scene', name: { en: 'Word Pop · Background', zh: '汉字泡泡 · 背景' } },
   { id: 'pop.bubble', name: { en: 'Word Pop · Bubbles', zh: '汉字泡泡 · 泡泡' } },
+  { id: 'snake.skin', name: { en: 'Hanzi Snake · Snake skin', zh: '汉字贪吃蛇 · 蛇皮' } },
+  { id: 'snake.board', name: { en: 'Hanzi Snake · Board', zh: '汉字贪吃蛇 · 棋盘' } },
   { id: 'frame', name: { en: 'Avatar frame', zh: '头像框' } },
 ];
 
@@ -59,6 +61,20 @@ export const SHOP_ITEMS: ShopItem[] = [
   { id: 'bubble.mint', slot: 'pop.bubble', name: { en: 'Mint', zh: '薄荷' }, price: 100, level: 2 },
   { id: 'bubble.gold', slot: 'pop.bubble', name: { en: 'Golden', zh: '金色' }, price: 180, level: 4 },
   { id: 'bubble.galaxy', slot: 'pop.bubble', name: { en: 'Galaxy', zh: '银河' }, price: 220, level: 6 },
+
+  // Hanzi Snake skins
+  { id: 'skin.classic', slot: 'snake.skin', name: { en: 'Classic green', zh: '经典绿' }, price: 0, level: 1, default: true },
+  { id: 'skin.bamboo', slot: 'snake.skin', name: { en: 'Bamboo', zh: '竹节' }, price: 100, level: 1 },
+  { id: 'skin.dragon', slot: 'snake.skin', name: { en: 'Dragon', zh: '中国龙' }, price: 160, level: 2 },
+  { id: 'skin.ink', slot: 'snake.skin', name: { en: 'Ink brush', zh: '水墨' }, price: 200, level: 4 },
+  { id: 'skin.rainbow', slot: 'snake.skin', name: { en: 'Rainbow', zh: '彩虹' }, price: 250, level: 6 },
+
+  // Hanzi Snake boards
+  { id: 'field.grass', slot: 'snake.board', name: { en: 'Grass', zh: '草地' }, price: 0, level: 1, default: true },
+  { id: 'field.sand', slot: 'snake.board', name: { en: 'Sand', zh: '沙滩' }, price: 100, level: 1 },
+  { id: 'field.paper', slot: 'snake.board', name: { en: 'Rice paper', zh: '宣纸' }, price: 140, level: 2 },
+  { id: 'field.chalk', slot: 'snake.board', name: { en: 'Chalkboard', zh: '黑板' }, price: 180, level: 3 },
+  { id: 'field.night', slot: 'snake.board', name: { en: 'Starry night', zh: '星空' }, price: 220, level: 5 },
 
   // Avatar frames (level rewards are free to claim)
   { id: 'frame.none', slot: 'frame', name: { en: 'No frame', zh: '无边框' }, price: 0, level: 1, default: true },
